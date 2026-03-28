@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --salon-base: #FFFFFF;
+    --salon-surface: #F4F4F5;
+    --salon-primary: #050505;
+    --salon-muted: #A1A1AA;
+    --salon-light: #52525B;
+    --salon-accent: #8b6b23;
+    --salon-golden: #c5a059;
+    --salon-golden-muted: rgba(197, 159, 89, 0.951);
+  }
+
+  .dark {
+    --salon-base: #050505;
+    --salon-surface: #0a0a0a;
+    --salon-primary: #F4F4F5;
+    --salon-muted: #71717A;
+    --salon-light: #A1A1AA;
+    --salon-accent: #ecc94b;
+    --salon-golden: #c5a059;
+    --salon-golden-muted: rgba(197, 159, 89, 0.677);
+  }
+}
+
+body {
+  background-color: var(--salon-base);
+  color: var(--salon-primary);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.serif-text {
+  font-family: 'Cinzel', serif;
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--salon-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--salon-surface);
+}
+
+/* Minimalist Button */
+.sleek-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 3rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--salon-primary);
+  background: transparent;
+  border: 1px solid rgba(150, 150, 150, 0.3);
+  overflow: hidden;
+  transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+  cursor: pointer;
+}
+
+.sleek-btn span {
+  position: relative;
+  z-index: 10;
+  transition: color 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.sleek-btn::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--salon-primary);
+  transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+  z-index: 0;
+  border-radius: 50% 50% 0 0;
+}
+
+.sleek-btn:hover {
+  border-color: var(--salon-primary);
+}
+
+.sleek-btn:hover span {
+  color: var(--salon-base);
+}
+
+.sleek-btn:hover::before {
+  top: 0;
+  border-radius: 0;
+}
+
+/* Golden Variation */
+.sleek-btn-golden {
+  border-color: var(--salon-golden) !important;
+  color: var(--salon-primary) !important;
+}
+
+.sleek-btn-golden::before {
+  background: var(--salon-golden) !important;
+}
+
+.sleek-btn-golden:hover span {
+  color: var(--salon-base) !important;
+}
+
+/* Interactive underline for links */
+.nav-link {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 2px;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: currentColor;
+  transform: translateX(-101%);
+  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.nav-link:hover::after {
+  transform: translateX(0);
+}
