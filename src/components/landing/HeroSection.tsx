@@ -2,14 +2,34 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../ui/Button';
 
-const slides = [
+interface HeroButton {
+    label: string;
+    link: string;
+    variant: "golden" | "golden-outline" | "white" | "ghost" | "link";
+}
+
+interface HeroSlide {
+    id: number;
+    tagline: string;
+    title: string;
+    italicTitle: string;
+    description: string;
+    img: string;
+    buttons: HeroButton[];
+}
+
+const slides: HeroSlide[] = [
     {
         id: 1,
         tagline: "The Modern Edge",
         title: "Meticulous",
         italicTitle: "Precision.",
         description: "It's an art we take seriously. Experience bespoke styling crafted for the uncompromising individual. Be the energy you want to attract.",
-        img: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+        img: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+        buttons: [
+            { label: "Book Now", link: "#booking", variant: "golden" },
+            { label: "Join Waitlist", link: "#booking", variant: "golden-outline" }
+        ]
     },
     {
         id: 2,
@@ -17,7 +37,11 @@ const slides = [
         title: "Bespoke",
         italicTitle: "Grooming.",
         description: "Discover a sanctuary of modern luxury where traditional master barbering meets contemporary sophisticated aesthetics.",
-        img: "https://plus.unsplash.com/premium_photo-1683121230718-3256f14d08ac?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        img: "https://plus.unsplash.com/premium_photo-1683121230718-3256f14d08ac?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        buttons: [
+            { label: "Book Now", link: "#booking", variant: "golden" },
+            { label: "Our Services", link: "#categories", variant: "golden-outline" }
+        ]
     },
     {
         id: 3,
@@ -25,7 +49,11 @@ const slides = [
         title: "Absolute",
         italicTitle: "Mastery.",
         description: "Our master craftspeople deliver unparalleled attention to detail, maintaining the absolute highest standards in the industry.",
-        img: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+        img: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+        buttons: [
+            { label: "Book Now", link: "#booking", variant: "golden" },
+            { label: "View Collection", link: "#products", variant: "golden-outline" }
+        ]
     }
 ];
 
@@ -42,8 +70,8 @@ const HeroSection = () => {
     const slide = slides[currentSlide];
 
     return (
-        <section className="relative w-full min-h-screen md:h-screen overflow-hidden bg-salon-base border-b border-salon-surface flex flex-col">
-            
+        <section className="relative w-full min-h-screen overflow-hidden bg-salon-base border-b border-salon-surface flex flex-col">
+
             {/* Background Image Layer */}
             <div className="absolute inset-0 z-0 h-full w-full">
                 <AnimatePresence mode="wait">
@@ -65,15 +93,11 @@ const HeroSection = () => {
                 </AnimatePresence>
             </div>
 
-            {/* Content Layer: The OUT-OF-THE-BOX Solution */}
-            {/* We use min-h-screen with large padding on mobile to ENSURE spacing between elements. 
-                Elements are in the normal document flow, so they push each other naturally. */}
-            <div className="relative z-20 flex-1 flex flex-col items-center justify-between py-24 md:py-32 px-6 md:px-12 w-full max-w-[1400px] mx-auto overflow-y-auto md:overflow-hidden min-h-screen md:min-h-0">
-                
-                {/* Spacer for top/header on mobile */}
+            {/* Dynamic Content Layer */}
+            <div className="relative z-20 flex-1 flex flex-col items-center justify-between py-24 md:py-12 px-6 md:px-12 w-full max-w-[1400px] mx-auto overflow-y-auto md:overflow-hidden min-h-screen md:min-h-0">
+
                 <div className="hidden md:block h-10" />
 
-                {/* Main Content Area */}
                 <div className="flex flex-col items-center justify-center text-center w-full flex-1 mb-8 md:mb-0">
                     <AnimatePresence mode="wait">
                         <motion.div
@@ -97,20 +121,26 @@ const HeroSection = () => {
                                 {slide.description}
                             </p>
 
+                            {/* Dynamically Rendered Buttons from Data Source */}
                             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-                                <Button variant="golden" className="w-full sm:w-auto min-w-[180px] h-11 md:h-12 tracking-widest text-[10px]">
-                                    Book Now
-                                </Button>
-                                <Button as="a" href="#booking" variant="golden-outline" className="w-full sm:w-auto min-w-[180px] h-11 md:h-12 tracking-widest text-[10px]">
-                                    Join Waitlist
-                                </Button>
+                                {slide.buttons.map((btn, index) => (
+                                    <Button
+                                        key={`${slide.id}-btn-${index}`}
+                                        as="a"
+                                        href={btn.link}
+                                        variant={btn.variant}
+                                        className="w-full sm:w-auto min-w-[180px] h-11 md:h-12 tracking-widest text-[10px]"
+                                    >
+                                        {btn.label}
+                                    </Button>
+                                ))}
                             </div>
                         </motion.div>
                     </AnimatePresence>
                 </div>
 
-                {/* Navigation Dots - Part of the same flow, but at the bottom */}
-                <div className="flex gap-4 items-center justify-center py-4 md:py-0">
+                {/* Navigation Dots - Part of flow, with increased spacing from content */}
+                <div className="flex gap-4 items-center justify-center py-8 md:py-0 md:mt-6">
                     {slides.map((_, idx) => (
                         <button
                             key={idx}
