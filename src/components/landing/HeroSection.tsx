@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../ui/Button';
 
 const slides = [
-    // ... (rest of slides remains same)
     {
         id: 1,
         tagline: "The Modern Edge",
@@ -43,76 +42,86 @@ const HeroSection = () => {
     const slide = slides[currentSlide];
 
     return (
-        <section className="relative w-full min-h-[100svh] overflow-hidden bg-salon-base flex items-center justify-center border-b border-salon-surface pt-16 pb-4 md:py-0">
-
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={slide.id}
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1.5, ease: "easeInOut" }}
-                    className="absolute inset-0 w-full h-full"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-[#050505] z-10" />
-                    <img
-                        src={slide.img}
-                        alt="Saloon Saleh Hero"
-                        className="w-full h-full object-cover filter grayscale-[40%] object-[center_30%]"
-                    />
-                </motion.div>
-            </AnimatePresence>
-
-            {/* Mobile-Responsive Typography Fixes */}
-            <div className="relative z-20 flex flex-col items-center text-center px-4 md:px-8 w-full h-full justify-center mt-4 md:mt-8">
+        <section className="relative w-full min-h-screen md:h-screen overflow-hidden bg-salon-base border-b border-salon-surface flex flex-col">
+            
+            {/* Background Image Layer */}
+            <div className="absolute inset-0 z-0 h-full w-full">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={slide.id}
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -30 }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                        className="flex flex-col items-center w-full"
+                        initial={{ opacity: 0, scale: 1.05 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                        className="absolute inset-0 w-full h-full"
                     >
-                        <span className="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] text-salon-golden mb-3 md:mb-5">
-                            {slide.tagline}
-                        </span>
-
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[7.5rem] font-serif leading-[0.9] tracking-tight text-white drop-shadow-2xl">
-                            {slide.title} <br />
-                            <span className="italic text-white/90">{slide.italicTitle}</span>
-                        </h1>
-
-                        <p className="mt-3 text-[10px] md:text-xs max-w-xs md:max-w-md font-light leading-relaxed text-white/80">
-                            {slide.description}
-                        </p>
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/40 to-[#050505] z-10" />
+                        <img
+                            src={slide.img}
+                            alt="Saloon Saleh Hero"
+                            className="w-full h-full object-cover filter grayscale-[30%] object-[center_30%]"
+                        />
                     </motion.div>
                 </AnimatePresence>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                    className="mt-3 md:mt-6 flex flex-col sm:flex-row items-center gap-4 z-30 relative w-full sm:w-auto px-6 mb-4 md:mb-0"
-                >
-                    <Button variant="golden" size="sm" className="w-full sm:w-auto">
-                        <span>Book Now</span>
-                    </Button>
-                    <Button as="a" href="#booking" variant="golden-outline" size="sm" className="w-full sm:w-auto">
-                        <span>Join Waitlist</span>
-                    </Button>
-                </motion.div>
             </div>
 
-            <div className="absolute bottom-10 md:bottom-24 left-1/2 -translate-x-1/2 z-30 flex gap-4">
-                {slides.map((_, idx) => (
-                    <button
-                        key={idx}
-                        onClick={() => setCurrentSlide(idx)}
-                        className={`w-8 md:w-12 h-[2px] transition-all duration-500 ${currentSlide === idx ? 'bg-white' : 'bg-white/20 hover:bg-white/50'}`}
-                        aria-label={`Go to slide ${idx + 1}`}
-                    />
-                ))}
+            {/* Content Layer: The OUT-OF-THE-BOX Solution */}
+            {/* We use min-h-screen with large padding on mobile to ENSURE spacing between elements. 
+                Elements are in the normal document flow, so they push each other naturally. */}
+            <div className="relative z-20 flex-1 flex flex-col items-center justify-between py-24 md:py-32 px-6 md:px-12 w-full max-w-[1400px] mx-auto overflow-y-auto md:overflow-hidden min-h-screen md:min-h-0">
+                
+                {/* Spacer for top/header on mobile */}
+                <div className="hidden md:block h-10" />
+
+                {/* Main Content Area */}
+                <div className="flex flex-col items-center justify-center text-center w-full flex-1 mb-8 md:mb-0">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={slide.id}
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -30 }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className="flex flex-col items-center"
+                        >
+                            <span className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-salon-golden mb-5">
+                                {slide.tagline}
+                            </span>
+
+                            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[7.5rem] font-serif leading-[0.9] tracking-tight text-white drop-shadow-2xl mb-6">
+                                {slide.title} <br />
+                                <span className="italic text-white/90">{slide.italicTitle}</span>
+                            </h1>
+
+                            <p className="text-[11px] md:text-sm max-w-xs md:max-w-lg font-light leading-relaxed text-white/80 mb-10">
+                                {slide.description}
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                                <Button variant="golden" className="w-full sm:w-auto min-w-[180px] h-11 md:h-12 tracking-widest text-[10px]">
+                                    Book Now
+                                </Button>
+                                <Button as="a" href="#booking" variant="golden-outline" className="w-full sm:w-auto min-w-[180px] h-11 md:h-12 tracking-widest text-[10px]">
+                                    Join Waitlist
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+
+                {/* Navigation Dots - Part of the same flow, but at the bottom */}
+                <div className="flex gap-4 items-center justify-center py-4 md:py-0">
+                    {slides.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setCurrentSlide(idx)}
+                            className={`group relative h-8 px-1 flex items-center justify-center transition-all duration-300`}
+                            aria-label={`Go to slide ${idx + 1}`}
+                        >
+                            <span className={`w-8 md:w-16 h-[2px] transition-all duration-500 rounded-full ${currentSlide === idx ? 'bg-salon-golden md:bg-white scale-x-110' : 'bg-white/20 group-hover:bg-white/50'}`} />
+                        </button>
+                    ))}
+                </div>
             </div>
         </section>
     );

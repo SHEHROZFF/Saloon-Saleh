@@ -1,5 +1,5 @@
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useCart } from '../../contexts/CartContext';
 import Button from '../ui/Button';
@@ -49,24 +49,48 @@ const Header = () => {
                 <a href="#categories" className="hover:text-salon-golden transition-colors duration-300">Shop</a>
             </nav>
 
-            <div className="flex items-center gap-2 md:gap-4 z-50">
-                <Button
-                    variant="ghost" 
+            <div className="flex items-center gap-3 md:gap-4 z-50">
+                {/* Refined Theme Switcher - High Visibility */}
+                <button
                     onClick={toggleTheme}
-                    className="w-10 h-10 rounded-full border border-salon-golden flex items-center justify-center text-white bg-salon-primary hover:bg-salon-golden hover:text-salon-primary transition-all duration-300 relative overflow-hidden z-[1011] shadow-[0_0_20px_rgba(197,160,89,0.2)]"
+                    className="w-11 h-11 rounded-full border border-salon-golden/40 flex items-center justify-center text-salon-primary hover:bg-salon-golden hover:text-salon-base transition-all duration-300 relative overflow-hidden bg-salon-surface/30 backdrop-blur-sm group/theme"
+                    aria-label="Toggle theme"
                 >
-                    {theme === 'dark' ? (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707m12.728 0A9 9 0 115.636 5.636m12.728 12.728A9 9 0 015.636 5.636"></path></svg>
-                    ) : (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                    )}
-                </Button>
+                    <div className="relative w-5 h-5 md:w-6 md:h-6">
+                        <AnimatePresence mode="wait">
+                            {theme === 'dark' ? (
+                                <motion.svg 
+                                    key="sun"
+                                    initial={{ opacity: 0, scale: 0.8, rotate: -45 }}
+                                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                    exit={{ opacity: 0, scale: 0.8, rotate: 45 }}
+                                    className="w-full h-full absolute inset-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
+                                >
+                                    <circle cx="12" cy="12" r="4" />
+                                    <path strokeLinecap="round" d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                                </motion.svg>
+                            ) : (
+                                <motion.svg 
+                                    key="moon"
+                                    initial={{ opacity: 0, scale: 0.8, rotate: 45 }}
+                                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                    exit={{ opacity: 0, scale: 0.8, rotate: -45 }}
+                                    className="w-full h-full absolute inset-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                                </motion.svg>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </button>
 
                 {/* Cart Icon */}
-                <div className="relative cursor-pointer w-8 h-8 flex flex-col justify-center items-center text-salon-primary hover:text-salon-golden transition-colors group">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                <div className="relative cursor-pointer w-11 h-11 flex flex-col justify-center items-center text-salon-primary hover:text-salon-golden transition-colors group">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
                     {cartCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-salon-golden text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center pointer-events-none group-hover:scale-110 transition-transform">
+                        <span className="absolute top-1 right-1 bg-salon-golden text-black text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center pointer-events-none group-hover:scale-110 transition-transform">
                             {cartCount}
                         </span>
                     )}
