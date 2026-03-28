@@ -27,8 +27,8 @@ const slides: HeroSlide[] = [
         description: "It's an art we take seriously. Experience bespoke styling crafted for the uncompromising individual. Be the energy you want to attract.",
         img: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
         buttons: [
-            { label: "Book Now", link: "#booking", variant: "golden" },
-            { label: "Join Waitlist", link: "#booking", variant: "golden-outline" }
+            { label: "Book Now", link: "/booking", variant: "golden" },
+            { label: "Join Waitlist", link: "/booking", variant: "golden-outline" }
         ]
     },
     {
@@ -39,8 +39,8 @@ const slides: HeroSlide[] = [
         description: "Discover a sanctuary of modern luxury where traditional master barbering meets contemporary sophisticated aesthetics.",
         img: "https://plus.unsplash.com/premium_photo-1683121230718-3256f14d08ac?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         buttons: [
-            { label: "Book Now", link: "#booking", variant: "golden" },
-            { label: "Our Services", link: "#categories", variant: "golden-outline" }
+            { label: "Book Now", link: "/booking", variant: "golden" },
+            { label: "Our Services", link: "/shop", variant: "golden-outline" }
         ]
     },
     {
@@ -51,8 +51,8 @@ const slides: HeroSlide[] = [
         description: "Our master craftspeople deliver unparalleled attention to detail, maintaining the absolute highest standards in the industry.",
         img: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
         buttons: [
-            { label: "Book Now", link: "#booking", variant: "golden" },
-            { label: "View Collection", link: "#products", variant: "golden-outline" }
+            { label: "Book Now", link: "/booking", variant: "golden" },
+            { label: "View Collection", link: "/shop", variant: "golden-outline" }
         ]
     }
 ];

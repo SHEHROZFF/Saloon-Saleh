@@ -63,8 +63,18 @@ const BookingSection = () => {
                                 </select>
                             </div>
 
-                            <Button variant="golden" className="mt-2 w-full justify-center" type="submit">
-                                <span>Request Appointment</span>
+                            <Button as="a" href="/booking" variant="golden" className="mt-2 w-full justify-center">
+                                <span>Start Interactive Booking</span>
+                            </Button>
+                            
+                            <div className="flex items-center gap-4 my-2">
+                                <div className="h-[1px] flex-1 bg-salon-golden/10"></div>
+                                <span className="text-[8px] uppercase tracking-widest text-salon-golden-muted">or quick request</span>
+                                <div className="h-[1px] flex-1 bg-salon-golden/10"></div>
+                            </div>
+                            
+                            <Button variant="ghost" className="w-full justify-center text-[10px] tracking-widest border border-salon-golden/20" type="submit">
+                                <span>Join Waitlist Only</span>
                             </Button>
                             
                             <p className="text-center text-[9px] text-salon-golden-muted uppercase tracking-[0.1em] mt-2">

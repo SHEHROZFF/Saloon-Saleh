@@ -7,6 +7,8 @@ import ProfilePage from '@pages/dashboard/ProfilePage';
 import MainLayout from '@layouts/MainLayout';
 import AuthLayout from '@layouts/AuthLayout';
 import LandingPage from '@pages/LandingPage';
+import ShopPage from '@pages/ShopPage';
+import BookingPage from '@pages/BookingPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
@@ -66,6 +68,8 @@ const AppRoutes = () => {
             />
 
             {/* Default Route */}
+            <Route path="/booking" element={<BookingPage />} />
+            <Route path="/shop" element={<ShopPage />} />
             <Route path="/" element={<LandingPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
