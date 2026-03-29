@@ -47,7 +47,7 @@ const Header = () => {
         <>
             <motion.header
                 style={{ backgroundColor, backdropFilter: backdropBlur, borderBottom }}
-                className="fixed top-0 w-full px-6 md:px-12 py-4 flex justify-between items-center z-[100] transition-colors duration-300"
+                className="fixed top-0 w-full px-6 md:px-12 py-4 flex justify-between items-center z-[50] transition-colors duration-300"
             >
                 <div className="flex items-center gap-3 cursor-pointer z-50">
                     <img src="/Main_logo_wo_BG.png" alt="Saloon Saleh Logo" className="w-8 h-8 object-contain" />
