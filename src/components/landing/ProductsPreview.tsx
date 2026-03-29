@@ -1,42 +1,9 @@
-
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import SectionHeader from '../ui/SectionHeader';
-
-const products = [
-    {
-        id: 1,
-        title: "Scalp Clinix Oil Control",
-        brand: "Schwarzkopf Professional",
-        price: "$35",
-        category: "Scalp Clinix",
-        img: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?ixlib=rb-4.0.3&auto=format&fit=crop&w=1374&q=80"
-    },
-    {
-        id: 2,
-        title: "Matte Clay Armada",
-        brand: "Armada",
-        price: "$15",
-        category: "Hair & Beard",
-        img: "https://images.unsplash.com/photo-1608248593842-801081e18dc1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80"
-    },
-    {
-        id: 3,
-        title: "BonaCure Color Freeze",
-        brand: "Schwarzkopf Professional",
-        price: "$32",
-        category: "Bonacure",
-        img: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-        id: 4,
-        title: "Paste - Matte Finish",
-        brand: "Saloon Saleh",
-        price: "$20",
-        category: "Hair & Beard",
-        img: "https://images.unsplash.com/photo-1629198688000-71f23e745b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    }
-];
+import ProductPopup from '../shop/ProductPopup';
+import { shopProducts, Product } from '../../services/mockData';
 
 const categories = [
     { name: "Bonacure", count: "3 Products" },
@@ -47,8 +14,18 @@ const categories = [
 ];
 
 const ProductsPreview = () => {
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+    // Using first 4 products from mockData for consistency
+    const displayProducts = shopProducts.slice(0, 4);
+
     return (
         <section id="products-preview" className="py-20 md:py-28 bg-salon-base relative z-10 w-full overflow-hidden">
+            <ProductPopup 
+                product={selectedProduct} 
+                onClose={() => setSelectedProduct(null)} 
+            />
+            
             <div className="w-full max-w-[1400px] mx-auto px-8 md:px-16">
 
                 <SectionHeader
@@ -69,7 +46,7 @@ const ProductsPreview = () => {
 
                 {/* Staggered Product Layout */}
                 <div className="flex flex-col gap-20 md:gap-24">
-                    {products.map((product, idx) => (
+                    {displayProducts.map((product, idx) => (
                         <div key={product.id} className={`flex flex-col md:flex-row items-center gap-12 md:gap-20 ${idx % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
 
                             {/* Product Image */}
@@ -78,6 +55,7 @@ const ProductsPreview = () => {
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true, margin: "-100px" }}
                                 transition={{ duration: 0.8, ease: "easeOut" }}
+                                onClick={() => setSelectedProduct(product)}
                                 className="w-full md:w-[60%] relative group cursor-pointer overflow-hidden bg-salon-surface p-6 md:p-12 flex justify-center items-center h-[280px] md:h-[450px] border border-transparent hover:border-salon-golden/10 transition-colors"
                             >
                                 <div className="absolute inset-0 bg-salon-surface opacity-100 transition-opacity duration-1000 group-hover:opacity-0 pointer-events-none z-10 mix-blend-color"></div>
@@ -100,7 +78,7 @@ const ProductsPreview = () => {
                                 className="w-full md:w-[40%] flex flex-col items-start relative"
                             >
                                 <span className="absolute -top-24 md:-top-20 -left-10 text-[6rem] md:text-[9rem] font-serif font-bold text-salon-golden/5 -z-10 leading-none pointer-events-none">
-                                    0{product.id}
+                                    0{idx + 1}
                                 </span>
 
                                 <span className="text-[9px] uppercase tracking-[0.3em] text-salon-golden-muted mb-3 relative">{product.category}</span>
@@ -110,8 +88,15 @@ const ProductsPreview = () => {
                                 </p>
 
                                 <div className="flex items-center gap-8 relative">
-                                    <span className="text-lg font-serif text-salon-golden">{product.price}</span>
-                                    <Button variant="link" size="sm" className="text-salon-golden-muted hover:text-salon-golden font-medium border-b border-transparent hover:border-salon-golden">Add to Bag</Button>
+                                    <span className="text-lg font-serif text-salon-golden">${product.price}</span>
+                                    <Button 
+                                        onClick={() => setSelectedProduct(product)}
+                                        variant="link" 
+                                        size="sm" 
+                                        className="text-salon-golden-muted hover:text-salon-golden font-medium border-b border-transparent hover:border-salon-golden"
+                                    >
+                                        Add to Bag
+                                    </Button>
                                 </div>
                             </motion.div>
                         </div>

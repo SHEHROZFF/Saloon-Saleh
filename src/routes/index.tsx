@@ -20,6 +20,10 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
     return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" replace />;
 };
 
+import CartPage from '@pages/CartPage';
+import CheckoutPage from '@pages/CheckoutPage';
+import OrderSuccessPage from '@pages/OrderSuccessPage';
+
 const AppRoutes = () => {
     return (
         <Routes>
@@ -70,6 +74,9 @@ const AppRoutes = () => {
             {/* Default Route */}
             <Route path="/booking" element={<BookingPage />} />
             <Route path="/shop" element={<ShopPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order-success" element={<OrderSuccessPage />} />
             <Route path="/" element={<LandingPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
