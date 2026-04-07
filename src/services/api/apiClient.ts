@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
-const API_URL = 'http://localhost:3000/api/v1';
+const API_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
 class ApiClient {
     private client: AxiosInstance;
@@ -28,10 +28,10 @@ class ApiClient {
             if (!persistData.auth) return null;
 
             // Redux persist stores sub-slices as stringified JSON
-            const authData = typeof persistData.auth === 'string' 
-                ? JSON.parse(persistData.auth) 
+            const authData = typeof persistData.auth === 'string'
+                ? JSON.parse(persistData.auth)
                 : persistData.auth;
-            
+
             return authData;
         } catch (e) {
             console.error('ApiClient: Failed to parse persistence storage', e);
@@ -77,26 +77,26 @@ class ApiClient {
                             console.log('ApiClient: Attempting to refresh token...');
                             // Make direct API call to refresh without using this instance to avoid infinite loops
                             const refreshResponse = await axios.post(`${API_URL}/auth/refresh-token`, { refreshToken });
-                            
+
                             const newToken = refreshResponse.data.data.token;
                             const newRefreshToken = refreshResponse.data.data.refreshToken || refreshToken;
-                            
+
                             // Update apiClient's token so subsequent calls work
                             this.setToken(newToken);
-                            
+
                             // Update localStorage so Redux picks it up after reload
                             const persistDataString = localStorage.getItem('persist:root');
                             if (persistDataString) {
                                 const persistData = JSON.parse(persistDataString);
                                 const currentAuth = JSON.parse(persistData.auth);
-                                
+
                                 currentAuth.token = newToken;
                                 currentAuth.refreshToken = newRefreshToken;
-                                
+
                                 persistData.auth = JSON.stringify(currentAuth);
                                 localStorage.setItem('persist:root', JSON.stringify(persistData));
                             }
-                            
+
                             // Fire a custom event so the App can update Redux state in memory immediately
                             window.dispatchEvent(new CustomEvent('token_refreshed', { detail: { token: newToken, refreshToken: newRefreshToken } }));
 
@@ -114,7 +114,7 @@ class ApiClient {
                 // If not 401, or refresh failed, force logout
                 if (error.response?.status === 401) {
                     this.clearToken();
-                    
+
                     // Clear out redux persist auth state to ensure clean logout
                     const persistDataString = localStorage.getItem('persist:root');
                     if (persistDataString) {
@@ -122,10 +122,10 @@ class ApiClient {
                         persistData.auth = JSON.stringify({ user: null, token: null, refreshToken: null, isAuthenticated: false, loading: false });
                         localStorage.setItem('persist:root', JSON.stringify(persistData));
                     }
-                    
+
                     window.location.href = '/login';
                 }
-                
+
                 return Promise.reject(error.response?.data || error.response?.data?.message || error.message);
             }
         );
