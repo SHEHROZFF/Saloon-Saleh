@@ -1,34 +1,66 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { shopProducts, Product } from '../services/mockData';
+import { useGetProducts, useGetProductCategories } from '../hooks/queries/useProducts';
+import { Product } from '../services/api/productService';
 import Header from '../components/layout/Header';
 import Footer from '../components/landing/Footer';
 import Button from '../components/ui/Button';
 import ProductPopup from '../components/shop/ProductPopup';
+import { Loader2 } from 'lucide-react';
 
 const ShopPage = () => {
-    const [selectedCategory, setSelectedCategory] = useState('All');
-    const [sortBy, setSortBy] = useState('featured');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'All');
+    const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brand') || 'All');
+    const [sortBy, setSortBy] = useState('price-low');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-    const categories = ['All', ...new Set(shopProducts.map(p => p.category))];
+    // Sync state with URL params if they change
+    useEffect(() => {
+        const cat = searchParams.get('category');
+        const brd = searchParams.get('brand');
+        if (cat) setSelectedCategory(cat);
+        if (brd) setSelectedBrand(brd);
+    }, [searchParams]);
+
+    const { data: productsData, isLoading } = useGetProducts({ search: searchQuery });
+    const { data: categoriesData } = useGetProductCategories();
+
+    const products: Product[] = (productsData?.data as any)?.products || productsData?.data || [];
+    const dbCategoriesList = (categoriesData?.data as any)?.categories || categoriesData?.data || [];
+    const dbCategories = dbCategoriesList.map((c: any) => c.name) || [];
+    const categories = ['All', ...new Set([...dbCategories])];
 
     const filteredProducts = useMemo(() => {
-        let result = shopProducts.filter(p =>
-            (selectedCategory === 'All' || p.category === selectedCategory) &&
-            (p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                p.brand.toLowerCase().includes(searchQuery.toLowerCase()))
-        );
+        let result = [...products];
+        
+        if (selectedCategory !== 'All') {
+            const desiredCategory = dbCategoriesList.find((c: any) => c.name === selectedCategory);
+            if (desiredCategory) {
+               result = result.filter(p => p.category_id === desiredCategory.id);
+            }
+        }
 
+        if (selectedBrand !== 'All') {
+            result = result.filter(p => p.brand === selectedBrand);
+        }
+
+        // Sort logic (separate from filtering)
         if (sortBy === 'price-low') {
-            result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+            result.sort((a, b) => Number(a.price) - Number(b.price));
         } else if (sortBy === 'price-high') {
-            result.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+            result.sort((a, b) => Number(b.price) - Number(a.price));
+        } else if (sortBy === 'featured') {
+            // Featured items first, then by sort_order
+            result.sort((a, b) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
+        } else if (sortBy === 'newest') {
+            result.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
         }
 
         return result;
-    }, [selectedCategory, sortBy, searchQuery]);
+    }, [products, selectedCategory, selectedBrand, sortBy, categoriesData]);
 
     return (
         <div className="w-full min-h-screen bg-salon-base text-salon-primary selection:bg-salon-golden selection:text-salon-base">
@@ -76,7 +108,14 @@ const ShopPage = () => {
                             {categories.map(cat => (
                                 <Button
                                     key={cat}
-                                    onClick={() => setSelectedCategory(cat)}
+                                    onClick={() => {
+                                        setSelectedCategory(cat);
+                                        setSearchParams(prev => {
+                                            if (cat === 'All') prev.delete('category');
+                                            else prev.set('category', cat);
+                                            return prev;
+                                        });
+                                    }}
                                     variant={selectedCategory === cat ? 'golden' : 'golden-outline'}
                                     size="sm"
                                     className="whitespace-nowrap shrink-0 min-w-[120px] h-11 tracking-[0.2em] font-bold"
@@ -89,6 +128,35 @@ const ShopPage = () => {
                         <div className="absolute top-0 right-0 h-full w-20 bg-gradient-to-l from-salon-base to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                         <div className="absolute top-0 left-0 h-full w-20 bg-gradient-to-r from-salon-base to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                     </div>
+
+                    {/* Quick Filter Status */}
+                    {(selectedCategory !== 'All' || selectedBrand !== 'All' || searchQuery) && (
+                        <div className="flex flex-wrap gap-3 items-center">
+                            <span className="text-[9px] uppercase tracking-widest text-salon-golden-muted font-bold mr-2">Active Filters:</span>
+                            {selectedCategory !== 'All' && (
+                                <button onClick={() => { setSelectedCategory('All'); setSearchParams(p => { p.delete('category'); return p; }); }} className="bg-salon-golden/10 border border-salon-golden/30 px-3 py-1 text-[10px] text-salon-golden flex items-center gap-2 hover:bg-salon-golden/20 transition-colors">
+                                    Cat: {selectedCategory} <span className="opacity-60">×</span>
+                                </button>
+                            )}
+                            {selectedBrand !== 'All' && (
+                                <button onClick={() => { setSelectedBrand('All'); setSearchParams(p => { p.delete('brand'); return p; }); }} className="bg-salon-golden/10 border border-salon-golden/30 px-3 py-1 text-[10px] text-salon-golden flex items-center gap-2 hover:bg-salon-golden/20 transition-colors">
+                                    Brand: {selectedBrand} <span className="opacity-60">×</span>
+                                </button>
+                            )}
+                            {(selectedCategory !== 'All' || selectedBrand !== 'All') && (
+                                <button 
+                                    onClick={() => { 
+                                        setSelectedCategory('All'); 
+                                        setSelectedBrand('All'); 
+                                        setSearchParams({}); 
+                                    }} 
+                                    className="text-[9px] uppercase tracking-widest text-salon-primary hover:text-white transition-colors underline underline-offset-4 decoration-salon-golden/30 ml-4"
+                                >
+                                    Clear All
+                                </button>
+                            )}
+                        </div>
+                    )}
 
                     {/* Search & Sort */}
                     <div className="flex items-center gap-4 w-full md:w-auto">
@@ -109,16 +177,22 @@ const ShopPage = () => {
                             onChange={(e) => setSortBy(e.target.value)}
                             className="bg-salon-surface border border-salon-golden/10 px-4 py-2 text-[10px] uppercase tracking-widest outline-none focus:border-salon-golden cursor-pointer"
                         >
-                            <option value="featured">Featured</option>
                             <option value="price-low">Price: Low to High</option>
                             <option value="price-high">Price: High to Low</option>
+                            <option value="featured">Featured First</option>
+                            <option value="newest">Newest</option>
                         </select>
                     </div>
                 </div>
 
-                {/* Product Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24">
-                    <AnimatePresence mode="popLayout">
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center py-24 space-y-4">
+                        <Loader2 className="w-12 h-12 animate-spin text-salon-golden" />
+                        <p className="text-sm font-serif text-salon-golden-muted tracking-widest uppercase">Curating the collection...</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24">
+                        <AnimatePresence mode="popLayout">
                         {filteredProducts.map((product, index) => (
                             <motion.div
                                 layout
@@ -132,7 +206,7 @@ const ShopPage = () => {
                             >
                                 <div className="relative aspect-[4/5] bg-salon-surface overflow-hidden mb-8 border border-salon-golden/5 group-hover:border-salon-golden/20 transition-all duration-500 shadow-lg group-hover:shadow-[0_20px_50px_rgba(212,175,55,0.1)]">
                                     <img
-                                        src={product.img}
+                                        src={product.image_url}
                                         alt={product.title}
                                         className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 grayscale-[10%] group-hover:grayscale-0"
                                     />
@@ -148,7 +222,7 @@ const ShopPage = () => {
                                     </div>
 
                                     <div className="absolute top-6 left-6 bg-black/60 backdrop-blur-md px-4 py-1.5 text-[9px] uppercase tracking-[0.3em] font-bold border border-salon-golden/30 text-salon-golden">
-                                        {product.category}
+                                        {dbCategoriesList.find((c: any) => c.id === product.category_id)?.name || 'Product'}
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-start px-2">
@@ -167,6 +241,7 @@ const ShopPage = () => {
                         ))}
                     </AnimatePresence>
                 </div>
+                )}
 
                 {filteredProducts.length === 0 && (
                     <div className="py-24 text-center">
@@ -176,7 +251,9 @@ const ShopPage = () => {
                             className="mt-4 text-salon-golden"
                             onClick={() => {
                                 setSelectedCategory('All');
+                                setSelectedBrand('All');
                                 setSearchQuery('');
+                                setSearchParams({});
                             }}
                         >
                             Clear all filters

@@ -3,13 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../components/ui/Button';
 import Header from '../components/layout/Header';
 import Footer from '../components/landing/Footer';
-import { salonServices, salonStaff, SalonService, Staff } from '../services/mockData';
+import { useGetServices } from '../hooks/queries/useServices';
+import { useGetStaff } from '../hooks/queries/useStaff';
+import { useGetTimeSlots, useCheckAvailability, useCreateBooking } from '../hooks/queries/useBookings';
+import { Service } from '../services/api/serviceService';
+import { Staff } from '../services/api/staffService';
+import { Loader2 } from 'lucide-react';
 
 type BookingStep = 1 | 2 | 3 | 4 | 5 | 6;
 
 interface BookingData {
-    gender: 'Men' | 'Women' | 'Kids' | null;
-    services: SalonService[];
+    gender: string | null;
+    services: Service[];
     staff: Staff | null;
     date: string | null;
     time: string | null;
@@ -42,7 +47,7 @@ const BookingPage = () => {
     const nextStep = () => setStep(prev => Math.min(prev + 1, 6) as BookingStep);
     const prevStep = () => setStep(prev => Math.max(prev - 1, 1) as BookingStep);
 
-    const toggleService = (service: SalonService) => {
+    const toggleService = (service: Service) => {
         setBookingData(prev => ({
             ...prev,
             services: prev.services.find(s => s.id === service.id)
@@ -52,16 +57,16 @@ const BookingPage = () => {
     };
 
     const totalPrice = useMemo(() => {
-        return bookingData.services.reduce((acc, s) => acc + parseFloat(s.price), 0).toFixed(2);
+        return bookingData.services.reduce((acc, s) => acc + parseFloat(s.price.toString()), 0).toFixed(2);
     }, [bookingData.services]);
 
     const renderStep = () => {
         switch (step) {
             case 1: return <StepGender onSelect={(g) => { setBookingData(p => ({ ...p, gender: g })); nextStep(); }} />;
-            case 2: return <StepServices selected={bookingData.services} onToggle={toggleService} onNext={nextStep} />;
+            case 2: return <StepServices gender={bookingData.gender} selected={bookingData.services} onToggle={toggleService} onNext={nextStep} />;
             case 3: return <StepStaff onSelect={(s) => { setBookingData(p => ({ ...p, staff: s })); nextStep(); }} onSkip={() => { setBookingData(p => ({ ...p, staff: null })); nextStep(); }} />;
-            case 4: return <StepDateTime date={bookingData.date} time={bookingData.time} onSelect={(d, t) => setBookingData(p => ({ ...p, date: d, time: t }))} onNext={nextStep} />;
-            case 5: return <StepDetails data={bookingData.customer} onChange={(c) => setBookingData(p => ({ ...p, customer: c }))} onNext={nextStep} />;
+            case 4: return <StepDateTime date={bookingData.date} time={bookingData.time} staffId={bookingData.staff?.id} onSelect={(d, t) => setBookingData(p => ({ ...p, date: d, time: t }))} onNext={nextStep} />;
+            case 5: return <StepDetails data={bookingData} onChange={(c) => setBookingData(p => ({ ...p, customer: c }))} onNext={nextStep} />;
             case 6: return <StepConfirmation data={bookingData} total={totalPrice} />;
             default: return null;
         }
@@ -145,16 +150,29 @@ const StepGender = ({ onSelect }: { onSelect: (g: any) => void }) => {
     );
 };
 
-const StepServices = ({ selected, onToggle, onNext }: { selected: SalonService[], onToggle: (s: SalonService) => void, onNext: () => void }) => {
-    const categories = ['Hair', 'Beard', 'Skin'];
+const StepServices = ({ gender, selected, onToggle, onNext }: { gender: string | null, selected: Service[], onToggle: (s: Service) => void, onNext: () => void }) => {
+    const { data: servicesData, isLoading } = useGetServices({ gender: gender === 'Kids' ? undefined : gender || undefined });
+    const liveServices = (servicesData?.data as any)?.services || servicesData?.data || [];
+    
+    // Group categories dynamically
+    const categories = [...new Set(liveServices.map((s: any) => s.category_name || 'General'))];
+    
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-24 space-y-4">
+                <Loader2 className="w-12 h-12 animate-spin text-salon-golden" />
+                <p className="text-sm font-serif text-salon-golden-muted tracking-widest uppercase">Fetching Services...</p>
+            </div>
+        );
+    }
     return (
         <div className="space-y-8">
             <div className="space-y-12">
-                {categories.map(cat => (
+                {categories.map((cat: any) => (
                     <div key={cat} className="space-y-4">
-                        <h3 className="text-xs uppercase tracking-[0.4em] text-salon-golden border-b border-salon-golden/20 pb-2">{cat}</h3>
+                        <h3 className="text-xs uppercase tracking-[0.4em] text-salon-golden border-b border-salon-golden/20 pb-2">{cat as string}</h3>
                         <div className="grid grid-cols-1 gap-3">
-                            {salonServices.filter(s => s.category === cat).map(s => {
+                            {liveServices.filter((s: any) => (s.category_name || 'General') === cat).map((s: any) => {
                                 const isSelected = selected.some(item => item.id === s.id);
                                 return (
                                     <div
@@ -166,7 +184,7 @@ const StepServices = ({ selected, onToggle, onNext }: { selected: SalonService[]
                                             }`}
                                     >
                                         <div>
-                                            <p className={`font-serif text-lg ${isSelected ? 'text-salon-golden' : 'text-salon-primary'}`}>{s.name}</p>
+                                            <p className={`font-serif text-lg ${isSelected ? 'text-salon-golden' : 'text-salon-primary'}`}>{s.name || s.title}</p>
                                             <p className="text-[10px] uppercase tracking-widest text-salon-golden-muted">{s.duration}</p>
                                         </div>
                                         <div className="text-right">
@@ -185,7 +203,7 @@ const StepServices = ({ selected, onToggle, onNext }: { selected: SalonService[]
             <div className="sticky bottom-8 pt-8 border-t border-salon-golden/10 bg-salon-base flex justify-between items-center">
                 <div>
                     <span className="text-[10px] uppercase tracking-widest text-salon-golden-muted">Estimated Total</span>
-                    <p className="text-2xl font-serif">${selected.reduce((a, b) => a + parseFloat(b.price), 0).toFixed(2)}</p>
+                    <p className="text-2xl font-serif">${selected.reduce((a, b) => a + parseFloat(b.price.toString()), 0).toFixed(2)}</p>
                 </div>
                 <Button variant="golden" className="px-12" onClick={onNext} disabled={selected.length === 0}>
                     Next Step
@@ -197,7 +215,17 @@ const StepServices = ({ selected, onToggle, onNext }: { selected: SalonService[]
 
 const StepStaff = ({ onSelect, onSkip }: { onSelect: (s: Staff) => void, onSkip: () => void }) => {
     const [search, setSearch] = useState('');
-    const filteredStaff = salonStaff.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
+    const { data: staffData, isLoading } = useGetStaff();
+    const liveStaff = (staffData?.data as any)?.staff || staffData?.data || [];
+    const filteredStaff = liveStaff.filter((s: any) => s.name.toLowerCase().includes(search.toLowerCase()));
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-24 space-y-4">
+                <Loader2 className="w-12 h-12 animate-spin text-salon-golden" />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">
@@ -213,14 +241,14 @@ const StepStaff = ({ onSelect, onSkip }: { onSelect: (s: Staff) => void, onSkip:
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredStaff.map(s => (
+                {filteredStaff.map((s: any) => (
                     <div
                         key={s.id}
                         onClick={() => onSelect(s)}
                         className="flex items-center gap-6 p-6 bg-salon-surface border border-salon-golden/10 hover:border-salon-golden cursor-pointer group transition-all"
                     >
                         <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-salon-golden/20 group-hover:border-salon-golden transition-colors grayscale group-hover:grayscale-0">
-                            <img src={s.avatar} alt={s.name} className="w-full h-full object-cover" />
+                            <img src={s.avatar_url || '/step1/men.png'} alt={s.name} className="w-full h-full object-cover" />
                         </div>
                         <div>
                             <h3 className="text-xl font-serif">{s.name}</h3>
@@ -243,10 +271,27 @@ const StepStaff = ({ onSelect, onSkip }: { onSelect: (s: Staff) => void, onSkip:
     );
 };
 
-const StepDateTime = ({ date, time, onSelect, onNext }: { date: any, time: any, onSelect: (d: any, t: any) => void, onNext: () => void }) => {
+const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, time: any, staffId: string | undefined, onSelect: (d: any, t: any) => void, onNext: () => void }) => {
     const [viewDate, setViewDate] = useState(new Date(date || new Date()));
     const scrollRef = useRef<HTMLDivElement>(null);
-    const timeSlots = ["10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:30 PM", "04:00 PM", "05:30 PM", "07:00 PM"];
+    
+    // Remote checks
+    const { data: slotsData, isLoading: slotsLoading } = useGetTimeSlots();
+    const getLocalFormattedDate = (d: Date) => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    const formattedDate = date || getLocalFormattedDate(new Date());
+    const { data: availabilityData, isLoading: availLoading } = useCheckAvailability(formattedDate, staffId);
+    
+    const timeSlots = (slotsData?.data as any)?.time_slots || slotsData?.data || [];
+    
+    // Availability data returns objects: { id, slot_time, is_available: boolean }
+    const availSlotsArray = (availabilityData?.data as any)?.slots || [];
+    const bookedSlotIds = availSlotsArray.filter((s: any) => s.is_available === false).map((s: any) => s.id);
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -259,7 +304,7 @@ const StepDateTime = ({ date, time, onSelect, onNext }: { date: any, time: any, 
         for (let i = 1; i <= daysInMonth; i++) {
             const dateObj = new Date(year, month, i);
             d.push({
-                full: dateObj.toISOString().split('T')[0],
+                full: getLocalFormattedDate(dateObj),
                 day: dateObj.toLocaleDateString('en-US', { weekday: 'short' }),
                 num: i,
                 month: dateObj.toLocaleDateString('en-US', { month: 'short' }),
@@ -358,24 +403,33 @@ const StepDateTime = ({ date, time, onSelect, onNext }: { date: any, time: any, 
             {/* Time Slots Section */}
             <div className="space-y-8">
                 <h3 className="text-[10px] uppercase tracking-[0.5em] text-center text-salon-golden">Available Time</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3 max-w-3xl mx-auto">
-                    {timeSlots.map(t => {
-                        const isSelectedTime = time === t;
-                        return (
-                            <button
-                                key={t}
-                                onClick={() => onSelect(date, t)}
-                                className={`p-4 border text-center transition-all duration-300 font-serif text-lg ${
-                                    isSelectedTime 
-                                    ? 'bg-salon-surface border-salon-golden shadow-[0_5px_20px_rgba(212,175,55,0.15),inset_0_0_15px_rgba(212,175,55,0.15)] scale-105 z-10 text-salon-golden' 
-                                    : 'bg-salon-surface border-salon-golden/10 hover:border-salon-golden'
-                                }`}
-                            >
-                                {t}
-                            </button>
-                        );
-                    })}
-                </div>
+                
+                {slotsLoading || availLoading ? (
+                    <div className="flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-salon-golden" /></div>
+                ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3 max-w-3xl mx-auto">
+                        {timeSlots.map((t: any) => {
+                            const isSelectedTime = time === t.id;
+                            const isBooked = bookedSlotIds.includes(t.id);
+                            
+                            return (
+                                <button
+                                    key={t.id}
+                                    onClick={() => onSelect(date, t.id)}
+                                    disabled={isBooked}
+                                    className={`p-4 border text-center transition-all duration-300 font-serif text-lg ${
+                                        isBooked ? 'opacity-30 cursor-not-allowed bg-salon-surface border-transparent line-through text-salon-muted' : 
+                                        isSelectedTime 
+                                        ? 'bg-salon-surface border-salon-golden shadow-[0_5px_20px_rgba(212,175,55,0.15),inset_0_0_15px_rgba(212,175,55,0.15)] scale-105 z-10 text-salon-golden' 
+                                        : 'bg-salon-surface border-salon-golden/10 hover:border-salon-golden'
+                                    }`}
+                                >
+                                    {t.display_label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
 
             <div className="flex justify-center pt-8 border-t border-salon-golden/10">
@@ -392,7 +446,33 @@ const StepDateTime = ({ date, time, onSelect, onNext }: { date: any, time: any, 
     );
 };
 
-const StepDetails = ({ data, onChange, onNext }: { data: any, onChange: (d: any) => void, onNext: () => void }) => (
+const StepDetails = ({ data, onChange, onNext }: { data: BookingData, onChange: (d: any) => void, onNext: () => void }) => {
+    const { mutate, isPending } = useCreateBooking();
+    const customer = data.customer;
+
+    const handleBookingSubmit = () => {
+        // Construct backend payload
+        const payload = {
+            gender: data.gender,
+            staff_id: data.staff?.id,
+            booking_date: data.date,
+            time_slot_id: data.time,
+            first_name: customer.firstName,
+            last_name: customer.lastName,
+            email: customer.email,
+            phone: customer.phone,
+            notes: customer.notes,
+            total_price: data.services.reduce((a, b) => a + parseFloat(b.price.toString()), 0),
+            service_ids: data.services.map(s => s.id)
+        };
+
+        mutate(payload, {
+            onSuccess: () => onNext(),
+            onError: (err) => alert("Failed to book appointment: " + err)
+        });
+    };
+
+    return (
     <div className="space-y-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
@@ -401,8 +481,8 @@ const StepDetails = ({ data, onChange, onNext }: { data: any, onChange: (d: any)
                     type="text"
                     placeholder="E.g. James"
                     className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
-                    value={data.firstName}
-                    onChange={(e) => onChange({ ...data, firstName: e.target.value })}
+                    value={customer.firstName}
+                    onChange={(e) => onChange({ ...customer, firstName: e.target.value })}
                 />
             </div>
             <div className="space-y-2">
@@ -411,8 +491,8 @@ const StepDetails = ({ data, onChange, onNext }: { data: any, onChange: (d: any)
                     type="text"
                     placeholder="E.g. Bond"
                     className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
-                    value={data.lastName}
-                    onChange={(e) => onChange({ ...data, lastName: e.target.value })}
+                    value={customer.lastName}
+                    onChange={(e) => onChange({ ...customer, lastName: e.target.value })}
                 />
             </div>
             <div className="space-y-2">
@@ -421,8 +501,8 @@ const StepDetails = ({ data, onChange, onNext }: { data: any, onChange: (d: any)
                     type="email"
                     placeholder="james@example.com"
                     className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
-                    value={data.email}
-                    onChange={(e) => onChange({ ...data, email: e.target.value })}
+                    value={customer.email}
+                    onChange={(e) => onChange({ ...customer, email: e.target.value })}
                 />
             </div>
             <div className="space-y-2">
@@ -431,8 +511,8 @@ const StepDetails = ({ data, onChange, onNext }: { data: any, onChange: (d: any)
                     type="tel"
                     placeholder="+971 -- --- ----"
                     className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
-                    value={data.phone}
-                    onChange={(e) => onChange({ ...data, phone: e.target.value })}
+                    value={customer.phone}
+                    onChange={(e) => onChange({ ...customer, phone: e.target.value })}
                 />
             </div>
         </div>
@@ -442,22 +522,22 @@ const StepDetails = ({ data, onChange, onNext }: { data: any, onChange: (d: any)
                 rows={4}
                 className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
                 placeholder="Any specific requests or requirements..."
-                value={data.notes}
-                onChange={(e) => onChange({ ...data, notes: e.target.value })}
+                value={customer.notes}
+                onChange={(e) => onChange({ ...customer, notes: e.target.value })}
             />
         </div>
         <div className="flex justify-center">
             <Button
                 variant="golden"
                 className="px-20 py-5"
-                onClick={onNext}
-                disabled={!data.firstName || !data.email || !data.phone}
+                onClick={handleBookingSubmit}
+                disabled={!customer.firstName || !customer.email || !customer.phone || isPending}
             >
-                Confirm Appointment
+                {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Confirm Appointment"}
             </Button>
         </div>
     </div>
-);
+)};
 
 const StepConfirmation = ({ data, total }: { data: BookingData, total: string }) => (
     <div className="flex flex-col items-center">

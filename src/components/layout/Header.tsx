@@ -5,6 +5,7 @@ import { useCart } from '../../contexts/CartContext';
 import Button from '../ui/Button';
 import MobileNav from './MobileNav';
 import CartDrawer from './CartDrawer';
+import { useGetProductCategories, useGetBrands } from '../../hooks/queries/useProducts';
 
 const Header = () => {
     const { scrollY } = useScroll();
@@ -12,6 +13,12 @@ const Header = () => {
     const { cart, cartCount } = useCart();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    
+    const { data: categoriesData } = useGetProductCategories();
+    const { data: brandsData } = useGetBrands();
+
+    const categories = (categoriesData?.data as any)?.categories || categoriesData?.data || [];
+    const brands = (brandsData?.data as any)?.brands || brandsData?.data || [];
     
     const cartTotal = cart.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
 
@@ -58,9 +65,43 @@ const Header = () => {
                 </div>
 
                 <nav className="hidden lg:flex items-center gap-10 text-[9px] uppercase tracking-[0.3em] text-salon-golden-muted font-medium z-50">
-                    <a href="/#expertise" className="hover:text-salon-golden transition-colors duration-300">Expertise</a>
-                    <a href="/booking" className="hover:text-salon-golden transition-colors duration-300">Booking</a>
-                    <a href="/shop" className="hover:text-salon-golden transition-colors duration-300">Shop</a>
+                    <a href="/#expertise" className="hover:text-salon-golden transition-colors duration-300 py-4">Expertise</a>
+                    <a href="/booking" className="hover:text-salon-golden transition-colors duration-300 py-4">Booking</a>
+                    <div className="relative group/shop py-4">
+                        <a href="/shop" className="hover:text-salon-golden transition-colors duration-300 flex items-center gap-1">
+                            Shop
+                            <svg className="w-3 h-3 text-salon-golden-muted group-hover/shop:text-salon-golden transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                        </a>
+                        
+                        {/* Mega Menu Dropdown */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[400px] bg-salon-base border border-salon-golden/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-md opacity-0 invisible group-hover/shop:opacity-100 group-hover/shop:visible transition-all duration-300 z-[100] flex p-8 gap-12 before:content-[''] before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:bg-transparent">
+                            <div className="flex-1">
+                                <h4 className="text-[9px] uppercase tracking-[0.4em] text-salon-golden font-bold mb-4 pb-2 border-b border-salon-golden/10">Categories</h4>
+                                <ul className="flex flex-col gap-3">
+                                    <li key="all-cat"><a href="/shop" className="text-xs text-salon-primary hover:text-salon-golden transition-colors tracking-widest block">All Categories</a></li>
+                                    {categories.map((c: any) => (
+                                        <li key={c.id}>
+                                            <a href={`/shop?category=${encodeURIComponent(c.name)}`} className="text-xs text-salon-primary hover:text-salon-golden transition-colors tracking-widest block">
+                                                {c.name}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="flex-1">
+                                <h4 className="text-[9px] uppercase tracking-[0.4em] text-salon-golden font-bold mb-4 pb-2 border-b border-salon-golden/10">Brands</h4>
+                                <ul className="flex flex-col gap-3">
+                                    {brands.map((brand: string) => (
+                                        <li key={brand}>
+                                            <a href={`/shop?brand=${encodeURIComponent(brand)}`} className="text-xs text-salon-primary hover:text-salon-golden transition-colors tracking-widest block">
+                                                {brand}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
 
                 <div className="flex items-center gap-3 md:gap-4 z-50">

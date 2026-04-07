@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../ui/Button';
+import { useGetBootstrapSettings } from '../../hooks/queries/useSettings';
 
 interface HeroButton {
     label: string;
@@ -9,7 +10,6 @@ interface HeroButton {
 }
 
 interface HeroSlide {
-    id: number;
     tagline: string;
     title: string;
     italicTitle: string;
@@ -18,9 +18,8 @@ interface HeroSlide {
     buttons: HeroButton[];
 }
 
-const slides: HeroSlide[] = [
+const defaultSlides: HeroSlide[] = [
     {
-        id: 1,
         tagline: "The Modern Edge",
         title: "Meticulous",
         italicTitle: "Precision.",
@@ -32,7 +31,6 @@ const slides: HeroSlide[] = [
         ]
     },
     {
-        id: 2,
         tagline: "Timeless Tradition",
         title: "Bespoke",
         italicTitle: "Grooming.",
@@ -44,7 +42,6 @@ const slides: HeroSlide[] = [
         ]
     },
     {
-        id: 3,
         tagline: "Exclusive Experience",
         title: "Absolute",
         italicTitle: "Mastery.",
@@ -59,13 +56,18 @@ const slides: HeroSlide[] = [
 
 const HeroSection = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const { data: bootstrapData } = useGetBootstrapSettings();
+    
+    const rawSlides = bootstrapData?.data?.hero_slides;
+    const slides: HeroSlide[] = rawSlides?.length ? rawSlides : defaultSlides;
 
     useEffect(() => {
+        if (!slides || slides.length === 0) return;
         const timer = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
         }, 6000);
         return () => clearInterval(timer);
-    }, []);
+    }, [slides]);
 
     const slide = slides[currentSlide];
 
@@ -76,7 +78,7 @@ const HeroSection = () => {
             <div className="absolute inset-0 z-0 h-full w-full">
                 <AnimatePresence mode="wait">
                     <motion.div
-                        key={slide.id}
+                        key={slide?.title || currentSlide}
                         initial={{ opacity: 0, scale: 1.05 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0 }}
@@ -101,7 +103,7 @@ const HeroSection = () => {
                 <div className="flex flex-col items-center justify-center text-center w-full flex-1 mb-8 md:mb-0">
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={slide.id}
+                            key={slide?.title || currentSlide}
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -30 }}
@@ -123,9 +125,9 @@ const HeroSection = () => {
 
                             {/* Dynamically Rendered Buttons from Data Source */}
                             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-                                {slide.buttons.map((btn, index) => (
+                                {slide?.buttons?.map((btn, index) => (
                                     <Button
-                                        key={`${slide.id}-btn-${index}`}
+                                        key={`slide-btn-${index}`}
                                         as="a"
                                         href={btn.link}
                                         variant={btn.variant}

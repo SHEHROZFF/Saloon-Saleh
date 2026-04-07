@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Product } from '../../services/mockData';
+import { Product } from '../../services/api/productService';
 import { useCart } from '../../contexts/CartContext';
 import Button from '../ui/Button';
 
@@ -21,8 +21,8 @@ const ProductPopup: React.FC<ProductPopupProps> = ({ product, onClose }) => {
             id: product.id,
             title: product.title,
             brand: product.brand,
-            price: product.price,
-            img: product.img
+            price: product.price.toString(),
+            img: product.image_url
         }, quantity);
         onClose();
     };
@@ -65,7 +65,7 @@ const ProductPopup: React.FC<ProductPopupProps> = ({ product, onClose }) => {
                                 initial={{ scale: 1.1, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ duration: 1.2 }}
-                                src={product.img}
+                                src={product.image_url}
                                 alt={product.title}
                                 className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-1000"
                             />
@@ -102,7 +102,7 @@ const ProductPopup: React.FC<ProductPopupProps> = ({ product, onClose }) => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10 pt-2">
                                     <div className="space-y-3">
                                         <h4 className="text-[10px] uppercase tracking-[0.4em] text-salon-primary font-bold">The Ceremony</h4>
-                                        <p className="text-[12px] text-salon-golden-muted leading-relaxed font-light">{product.usage}</p>
+                                        <p className="text-[12px] text-salon-golden-muted leading-relaxed font-light">{product.usage_instructions}</p>
                                     </div>
                                     <div className="space-y-3">
                                         <h4 className="text-[10px] uppercase tracking-[0.4em] text-salon-primary font-bold">Key Benefits</h4>
@@ -142,7 +142,7 @@ const ProductPopup: React.FC<ProductPopupProps> = ({ product, onClose }) => {
                                     variant="golden"
                                     className="flex-1 h-14 !text-[9px] font-bold uppercase"
                                 >
-                                    Add to Bag ${(parseFloat(product.price) * quantity).toFixed(2)}
+                                    Add to Bag ${(parseFloat(product.price.toString()) * quantity).toFixed(2)}
                                 </Button>
                             </div>
                         </div>

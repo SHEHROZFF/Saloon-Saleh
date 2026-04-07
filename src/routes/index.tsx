@@ -1,33 +1,78 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '@store/hooks';
 import LoginPage from '@pages/auth/LoginPage';
-import RegisterPage from '@pages/auth/RegisterPage';
-import DashboardPage from '@pages/dashboard/DashboardPage';
-import ProfilePage from '@pages/dashboard/ProfilePage';
-import MainLayout from '@layouts/MainLayout';
 import AuthLayout from '@layouts/AuthLayout';
+import PortalLayout from '@layouts/PortalLayout';
+
+// Public Pages
 import LandingPage from '@pages/LandingPage';
 import ShopPage from '@pages/ShopPage';
 import BookingPage from '@pages/BookingPage';
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
-    return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
-};
-
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-    const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
-    return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" replace />;
-};
-
 import CartPage from '@pages/CartPage';
 import CheckoutPage from '@pages/CheckoutPage';
 import OrderSuccessPage from '@pages/OrderSuccessPage';
 
+// Admin Portal Pages
+import AdminDashboard from '@pages/admin/AdminDashboard';
+import AdminBookings from '@pages/admin/AdminBookings';
+import AdminOrders from '@pages/admin/AdminOrders';
+import AdminProducts from '@pages/admin/AdminProducts';
+import AdminServices from '@pages/admin/AdminServices';
+import AdminStaff from '@pages/admin/AdminStaff';
+import AdminCoupons from '@pages/admin/AdminCoupons';
+import AdminWaitlist from '@pages/admin/AdminWaitlist';
+import AdminReports from '@pages/admin/AdminReports';
+import AdminSiteSettings from '@pages/admin/AdminSiteSettings';
+
+// Staff Portal Pages
+import StaffDashboard from '@pages/staff/StaffDashboard';
+import StaffBookings from '@pages/staff/StaffBookings';
+
+// Protected Route Guard
+const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles: string[] }) => {
+    const { isAuthenticated, user } = useAppSelector(state => state.auth);
+    const location = useLocation();
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    if (!user || !allowedRoles.includes(user.userType)) {
+        // User logged in but doesn't have permission for this route
+        // Send them to their appropriate dashboard, or home if customer
+        if (user?.userType === 'admin') return <Navigate to="/admin/dashboard" replace />;
+        if (user?.userType === 'staff') return <Navigate to="/staff/dashboard" replace />;
+        return <Navigate to="/" replace />;
+    }
+
+    return <>{children}</>;
+};
+
+// Public Route Guard (prevents logged-in admins from seeing login page)
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+    const { isAuthenticated, user } = useAppSelector(state => state.auth);
+    
+    if (isAuthenticated && user) {
+        if (user.userType === 'admin') return <Navigate to="/admin/dashboard" replace />;
+        if (user.userType === 'staff') return <Navigate to="/staff/dashboard" replace />;
+    }
+    
+    return <>{children}</>;
+};
+
+
 const AppRoutes = () => {
     return (
         <Routes>
-            {/* Public Routes */}
+            {/* ─── PUBLIC SHOP / LANDING ─── */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/booking" element={<BookingPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order-success" element={<OrderSuccessPage />} />
+
+            {/* ─── AUTHENTICATION ─── */}
             <Route
                 path="/login"
                 element={
@@ -38,46 +83,43 @@ const AppRoutes = () => {
                     </PublicRoute>
                 }
             />
-            <Route
-                path="/register"
-                element={
-                    <PublicRoute>
-                        <AuthLayout>
-                            <RegisterPage />
-                        </AuthLayout>
-                    </PublicRoute>
-                }
-            />
 
-            {/* Protected Routes */}
-            <Route
-                path="/dashboard"
-                element={
-                    <ProtectedRoute>
-                        <MainLayout>
-                            <DashboardPage />
-                        </MainLayout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/profile"
-                element={
-                    <ProtectedRoute>
-                        <MainLayout>
-                            <ProfilePage />
-                        </MainLayout>
-                    </ProtectedRoute>
-                }
-            />
+            {/* ─── ADMIN PORTAL (Only 'admin' can access) ─── */}
+            <Route path="/admin/*" element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                    <PortalLayout>
+                        <Routes>
+                            <Route path="dashboard" element={<AdminDashboard />} />
+                            <Route path="bookings" element={<AdminBookings />} />
+                            <Route path="orders" element={<AdminOrders />} />
+                            <Route path="products" element={<AdminProducts />} />
+                            <Route path="services" element={<AdminServices />} />
+                            <Route path="staff" element={<AdminStaff />} />
+                            <Route path="coupons" element={<AdminCoupons />} />
+                            <Route path="waitlist" element={<AdminWaitlist />} />
+                            <Route path="reports" element={<AdminReports />} />
+                            <Route path="settings" element={<AdminSiteSettings />} />
+                            <Route path="users" element={<div className="p-8 font-serif text-salon-primary">Users Management (Coming Soon)</div>} />
+                            <Route path="*" element={<Navigate to="dashboard" replace />} />
+                        </Routes>
+                    </PortalLayout>
+                </ProtectedRoute>
+            } />
 
-            {/* Default Route */}
-            <Route path="/booking" element={<BookingPage />} />
-            <Route path="/shop" element={<ShopPage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/order-success" element={<OrderSuccessPage />} />
-            <Route path="/" element={<LandingPage />} />
+            {/* ─── STAFF PORTAL (Only 'staff' can access) ─── */}
+            <Route path="/staff/*" element={
+                <ProtectedRoute allowedRoles={['staff']}>
+                    <PortalLayout>
+                        <Routes>
+                            <Route path="dashboard" element={<StaffDashboard />} />
+                            <Route path="bookings" element={<StaffBookings />} />
+                            <Route path="*" element={<Navigate to="dashboard" replace />} />
+                        </Routes>
+                    </PortalLayout>
+                </ProtectedRoute>
+            } />
+
+            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );

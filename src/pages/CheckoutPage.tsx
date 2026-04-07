@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
+import { useCreateOrder } from '../hooks/queries/useOrders';
+import { Loader2 } from 'lucide-react';
 import Header from '../components/layout/Header';
 import Footer from '../components/landing/Footer';
 import Button from '../components/ui/Button';
@@ -16,12 +18,50 @@ const CheckoutPage = () => {
     const shippingCost = 3.00;
     const grandTotal = cartTotal + shippingCost;
 
+    const { mutate, isPending } = useCreateOrder();
+    const [billingDetails, setBillingDetails] = useState({
+        firstName: '', lastName: '', address: '', city: '', phone: '', email: '', country: 'UK', postcode: ''
+    });
+
     const handlePlaceOrder = (e: React.FormEvent) => {
         e.preventDefault();
-        // Here we would typically hit an API
-        // For mock, we just clear and success
-        clearCart();
-        navigate('/order-success');
+        
+        const orderPayload = {
+            subtotal: cartTotal,
+            shipping_cost: shippingCost,
+            discount_amount: 0,
+            total: grandTotal,
+            shipping_method: 'delivery',
+            payment_method: paymentMethod,
+            payment_status: paymentMethod === 'card' ? 'paid' : 'pending',
+            items: cart.map(item => ({
+                product_id: item.id,
+                product_title: item.title,
+                product_brand: item.brand || 'Saloon Saleh',
+                price: Number(item.price),
+                quantity: item.quantity
+            })),
+            billing_address: {
+                first_name: billingDetails.firstName,
+                last_name: billingDetails.lastName,
+                country: billingDetails.country,
+                street_address: billingDetails.address,
+                city: billingDetails.city,
+                postcode: billingDetails.postcode,
+                phone: billingDetails.phone,
+                email: billingDetails.email
+            }
+        };
+
+        mutate(orderPayload, {
+            onSuccess: () => {
+                clearCart();
+                navigate('/order-success');
+            },
+            onError: (err) => {
+                alert("Order failed: " + err);
+            }
+        });
     };
 
     if (cart.length === 0) {
@@ -29,7 +69,7 @@ const CheckoutPage = () => {
         return null;
     }
 
-    const FormInput = ({ label, placeholder, required = true, type = "text", className = "" }: any) => (
+    const FormInput = ({ label, placeholder, required = true, type = "text", className = "", value, onChange }: any) => (
         <div className={`space-y-2 ${className}`}>
             <label className="text-[10px] uppercase tracking-[0.2em] text-salon-golden-muted font-bold block px-1">
                 {label} {required && <span className="text-red-500">*</span>}
@@ -38,6 +78,8 @@ const CheckoutPage = () => {
                 type={type}
                 required={required}
                 placeholder={placeholder}
+                value={value}
+                onChange={onChange}
                 className="w-full bg-salon-surface border border-salon-golden/10 px-6 py-4 text-xs focus:outline-none focus:border-salon-golden transition-all"
             />
         </div>
@@ -62,22 +104,19 @@ const CheckoutPage = () => {
                         <section className="space-y-8">
                             <h3 className="text-2xl font-serif border-b border-salon-golden/10 pb-6 uppercase tracking-widest">Billing Details</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormInput label="First Name" placeholder="e.g. John" />
-                                <FormInput label="Last Name" placeholder="e.g. Doe" />
+                                <FormInput label="First Name" placeholder="e.g. John" value={billingDetails.firstName} onChange={(e:any) => setBillingDetails({...billingDetails, firstName: e.target.value})} />
+                                <FormInput label="Last Name" placeholder="e.g. Doe" value={billingDetails.lastName} onChange={(e:any) => setBillingDetails({...billingDetails, lastName: e.target.value})} />
                             </div>
                             <FormInput label="Company Name (Optional)" placeholder="e.g. Salon LTD" required={false} />
-                            <FormInput label="Country / Region" placeholder="e.g. United Kingdom" />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormInput label="Street Address" placeholder="House number and street name" />
-                                <FormInput label="Apartment / Suite" placeholder="Apartment, suite, unit, etc (optional)" required={false} />
+                                <FormInput label="Country" placeholder="e.g. United Kingdom" value={billingDetails.country} onChange={(e:any) => setBillingDetails({...billingDetails, country: e.target.value})} />
+                                <FormInput label="Town / City" placeholder="e.g. London" value={billingDetails.city} onChange={(e:any) => setBillingDetails({...billingDetails, city: e.target.value})} />
                             </div>
+                            <FormInput label="Street Address" placeholder="House number and street name" value={billingDetails.address} onChange={(e:any) => setBillingDetails({...billingDetails, address: e.target.value})} />
+                            <FormInput label="Postcode" placeholder="e.g. EC1A 1BB" value={billingDetails.postcode} onChange={(e:any) => setBillingDetails({...billingDetails, postcode: e.target.value})} />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormInput label="Town / City" placeholder="e.g. London" />
-                                <FormInput label="Postcode / ZIP" placeholder="e.g. EC1A 1BB" />
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormInput label="Phone" placeholder="+44 20 7946 0000" type="tel" />
-                                <FormInput label="Email Address" placeholder="john.doe@example.com" type="email" />
+                                <FormInput label="Phone" placeholder="+44 20 7946 0000" type="tel" value={billingDetails.phone} onChange={(e:any) => setBillingDetails({...billingDetails, phone: e.target.value})} />
+                                <FormInput label="Email Address" placeholder="john.doe@example.com" type="email" value={billingDetails.email} onChange={(e:any) => setBillingDetails({...billingDetails, email: e.target.value})} />
                             </div>
                         </section>
 
@@ -205,14 +244,17 @@ const CheckoutPage = () => {
                                 <Button 
                                     type="submit"
                                     variant="golden" 
+                                    disabled={isPending}
                                     className="w-full h-16 text-[11px] uppercase tracking-[0.4em] font-bold shadow-[0_15px_40px_rgba(212,175,55,0.15)] group mt-8"
                                 >
-                                    <span className="flex items-center justify-center gap-2">
-                                        Seal the Ritual
-                                        <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                        </svg>
-                                    </span>
+                                    {isPending ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : (
+                                        <span className="flex items-center justify-center gap-2">
+                                            Seal the Ritual
+                                            <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                            </svg>
+                                        </span>
+                                    )}
                                 </Button>
 
                                 <p className="text-[9px] text-center text-salon-golden-muted/40 uppercase tracking-widest font-light leading-relaxed mt-6">

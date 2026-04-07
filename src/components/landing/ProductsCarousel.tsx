@@ -3,15 +3,17 @@ import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import SectionHeader from '../ui/SectionHeader';
 import ProductPopup from '../shop/ProductPopup';
-import { shopProducts, Product } from '../../services/mockData';
+import { useGetProducts } from '../../hooks/queries/useProducts';
+import { Product } from '../../services/api/productService';
 
 const ProductsCarousel = () => {
     const carouselRef = useRef<HTMLDivElement>(null);
     const [width, setWidth] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-    // Using first 6 products for the carousel
-    const displayProducts = shopProducts.slice(0, 6);
+    // Fetch only featured products
+    const { data: productsData } = useGetProducts({ featured: true });
+    const displayProducts = (productsData?.data as any)?.products || productsData?.data || [];
 
     // Re-calculate drag width on window resize
     useEffect(() => {
@@ -23,7 +25,7 @@ const ProductsCarousel = () => {
         updateWidth();
         window.addEventListener('resize', updateWidth);
         return () => window.removeEventListener('resize', updateWidth);
-    }, []);
+    }, [displayProducts]);
 
     const openPopup = (product: Product, e: React.MouseEvent) => {
         e.stopPropagation(); // prevent drag trigger
@@ -56,7 +58,7 @@ const ProductsCarousel = () => {
                     dragConstraints={{ right: 0, left: -width }}
                     className="flex gap-6 md:gap-14 w-max h-auto py-8"
                 >
-                    {displayProducts.map((product, idx) => (
+                    {displayProducts.map((product: any, idx: number) => (
                         <motion.div
                             key={product.id}
                             className="min-w-[240px] md:min-w-[380px] flex flex-col group"
@@ -69,7 +71,7 @@ const ProductsCarousel = () => {
                                     0{idx + 1}
                                 </span>
                                 <img
-                                    src={product.img}
+                                    src={product.image_url || '/placeholder.png'}
                                     alt={product.title}
                                     draggable="false" // prevents native drag interfering
                                     className="w-auto h-full object-contain mix-blend-luminosity opacity-70 group-hover:mix-blend-normal group-hover:opacity-100 group-hover:scale-105 transition-all duration-[1500ms] drop-shadow-2xl z-20 relative pointer-events-none"

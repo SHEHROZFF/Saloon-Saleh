@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { store } from '@store/store';
+import { store, persistor } from '@store/store';
+import { PersistGate } from 'redux-persist/integration/react';
 import App from './App';
 import './index.css';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -24,7 +25,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider>
                     <CartProvider>
-                        <App />
+                        <PersistGate loading={null} persistor={persistor}>
+                            <App />
+                        </PersistGate>
                     </CartProvider>
                 </ThemeProvider>
             </QueryClientProvider>

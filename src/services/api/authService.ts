@@ -21,6 +21,7 @@ interface AuthResponse {
             name: string;
             email: string;
             userType: string;
+            user_type?: string;
         };
         token: string;
         refreshToken: string;
@@ -29,18 +30,32 @@ interface AuthResponse {
 
 export const authService = {
     login: async (credentials: LoginRequest): Promise<AuthResponse> => {
-        return apiClient.post('/auth/login', credentials);
+        const response: any = await apiClient.post('/auth/login', credentials);
+        if (response.data?.user) {
+            // Map snake_case to camelCase for frontend consistency
+            response.data.user.userType = response.data.user.user_type || response.data.user.userType;
+        }
+        return response;
     },
 
     register: async (userData: RegisterRequest): Promise<AuthResponse> => {
-        return apiClient.post('/auth/register', userData);
+        const response: any = await apiClient.post('/auth/register', userData);
+        if (response.data?.user) {
+            response.data.user.userType = response.data.user.user_type || response.data.user.userType;
+        }
+        return response;
     },
 
     refreshToken: async (refreshToken: string): Promise<AuthResponse> => {
         return apiClient.post('/auth/refresh-token', { refreshToken });
     },
 
-    getProfile: async () => {
-        return apiClient.get('/users/me');
+    getProfile: async (): Promise<any> => {
+        const response: any = await apiClient.get('/users/me');
+        if (response.data?.user) {
+            // Map snake_case to camelCase for frontend consistency
+            response.data.user.userType = response.data.user.user_type || response.data.user.userType;
+        }
+        return response;
     },
 };

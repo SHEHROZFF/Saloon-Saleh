@@ -29,9 +29,14 @@ const authSlice = createSlice({
     reducers: {
         setCredentials: (
             state,
-            action: PayloadAction<{ user: User; token: string; refreshToken: string }>
+            action: PayloadAction<{ user: any; token: string; refreshToken: string }>
         ) => {
-            state.user = action.payload.user;
+            const user = action.payload.user;
+            // Map snake_case to camelCase if necessary
+            if (user && user.user_type && !user.userType) {
+                user.userType = user.user_type;
+            }
+            state.user = user;
             state.token = action.payload.token;
             state.refreshToken = action.payload.refreshToken;
             state.isAuthenticated = true;

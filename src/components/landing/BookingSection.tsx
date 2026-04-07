@@ -1,9 +1,37 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import SectionHeader from '../ui/SectionHeader';
 import DecorativeCard from '../ui/DecorativeCard';
+import { useGetServices } from '../../hooks/queries/useServices';
+import { useSubmitWaitlist } from '../../hooks/queries/useWaitlist';
 
 const BookingSection = () => {
+    const { data: servicesData } = useGetServices();
+    const services = (servicesData?.data as any)?.services || servicesData?.data || [];
+    const { mutate: submitWaitlist, isPending } = useSubmitWaitlist();
+
+    const [formData, setFormData] = useState({ full_name: '', phone: '', desired_service: '' });
+    const [statusText, setStatusText] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formData.full_name || !formData.phone) {
+            setStatusText('Please fill in your name and phone number.');
+            return;
+        }
+
+        submitWaitlist(formData, {
+            onSuccess: () => {
+                setStatusText('You have successfully joined the waiting list! Our team will contact you soon.');
+                setFormData({ full_name: '', phone: '', desired_service: '' });
+                setTimeout(() => setStatusText(''), 5000);
+            },
+            onError: () => {
+                setStatusText('Something went wrong. Please try again.');
+            }
+        });
+    };
     return (
         <section id="booking" className="py-12 md:py-24 w-full bg-salon-surface relative z-10 overflow-hidden">
             <div className="w-full max-w-[1400px] mx-auto px-8 md:px-16 flex flex-col lg:flex-row gap-8 items-center">
@@ -41,29 +69,49 @@ const BookingSection = () => {
                 {/* Right side: Sleek Custom Booking Form (Replaces Iframe) */}
                 <div className="w-full lg:w-1/2">
                     <DecorativeCard delay={0.2}>
-                        <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+                        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                             <div className="flex flex-col md:flex-row gap-4">
                                 <div className="w-full flex flex-col gap-2">
                                     <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Full Name</label>
-                                    <input type="text" className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20" placeholder="John Doe" />
+                                    <input 
+                                        type="text" 
+                                        required
+                                        value={formData.full_name}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20" 
+                                        placeholder="John Doe" 
+                                    />
                                 </div>
                                 <div className="w-full flex flex-col gap-2">
                                     <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Phone Number</label>
-                                    <input type="tel" className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20" placeholder="+971 50 000 0000" />
+                                    <input 
+                                        type="tel" 
+                                        required
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20" 
+                                        placeholder="+971 50 000 0000" 
+                                    />
                                 </div>
                             </div>
                             
                             <div className="w-full flex flex-col gap-2">
                                 <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Desired Service</label>
-                                <select className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden appearance-none rounded-none cursor-pointer transition-colors">
-                                    <option className="bg-salon-surface text-salon-primary">Precision Haircut</option>
-                                    <option className="bg-salon-surface text-salon-primary">Hot Towel Shave</option>
-                                    <option className="bg-salon-surface text-salon-primary">Complete Grooming Package</option>
-                                    <option className="bg-salon-surface text-salon-primary">Hair & Beard Sculpting</option>
+                                <select 
+                                    value={formData.desired_service}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, desired_service: e.target.value }))}
+                                    className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden appearance-none rounded-none cursor-pointer transition-colors"
+                                >
+                                    <option value="" className="bg-salon-surface text-salon-primary">Not Sure Yet</option>
+                                    {services.map((service: any) => (
+                                        <option key={service.id} value={service.name} className="bg-salon-surface text-salon-primary">
+                                            {service.name}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
-                            <Button as="a" href="/booking" variant="golden" className="mt-2 w-full justify-center">
+                            <Button as="a" href="/booking" variant="golden" className="mt-2 w-full justify-center text-center">
                                 <span>Start Interactive Booking</span>
                             </Button>
                             
@@ -73,13 +121,21 @@ const BookingSection = () => {
                                 <div className="h-[1px] flex-1 bg-salon-golden/10"></div>
                             </div>
                             
-                            <Button variant="ghost" className="w-full justify-center text-[10px] tracking-widest border border-salon-golden/20" type="submit">
-                                <span>Join Waitlist Only</span>
+                            <Button variant="ghost" className="w-full justify-center text-[10px] tracking-widest border border-salon-golden/20" type="submit" disabled={isPending}>
+                                <span>{isPending ? 'Joining...' : 'Join Waitlist Only'}</span>
                             </Button>
                             
-                            <p className="text-center text-[9px] text-salon-golden-muted uppercase tracking-[0.1em] mt-2">
-                                Our concierge will contact you to confirm.
-                            </p>
+                            {statusText && (
+                                <p className={`text-center text-[11px] uppercase tracking-[0.1em] mt-2 ${statusText.includes('successfully') ? 'text-green-500' : 'text-red-500'}`}>
+                                    {statusText}
+                                </p>
+                            )}
+
+                            {!statusText && (
+                                <p className="text-center text-[9px] text-salon-golden-muted uppercase tracking-[0.1em] mt-2">
+                                    Our concierge will contact you to confirm.
+                                </p>
+                            )}
                         </form>
                     </DecorativeCard>
                 </div>

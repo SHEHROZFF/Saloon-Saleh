@@ -7,14 +7,18 @@ import BookingSection from '../components/landing/BookingSection';
 import ProductsCarousel from '../components/landing/ProductsCarousel';
 import CategoriesSection from '../components/landing/CategoriesSection';
 import Footer from '../components/landing/Footer';
+import { useGetBootstrapSettings } from '../hooks/queries/useSettings';
 
 const LandingPage = () => {
+    const { data: bootstrapData } = useGetBootstrapSettings();
+    const marqueeItems = bootstrapData?.data?.marquee_items?.items || ['HIGH-END LUXURY SALON', 'EXCLUSIVE GROOMING', 'MASTER BARBERING'];
+
     return (
         <div className="w-full min-h-screen bg-salon-base text-salon-primary font-sans antialiased selection:bg-salon-golden selection:text-salon-base overflow-x-hidden">
             <Header />
             <HeroSection />
             <ExpertiseSection />
-            <Marquee text="HIGH-END LUXURY SALON" speed={5} />
+            <Marquee items={marqueeItems} speed={2} />
             <BookingSection />
             <CategoriesSection />
             <ProductsCarousel />
