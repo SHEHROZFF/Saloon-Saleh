@@ -22,7 +22,7 @@ const ProductsPreview = () => {
     return (
         <section id="products-preview" className="py-20 md:py-28 bg-salon-base relative z-10 w-full overflow-hidden">
             <ProductPopup 
-                product={selectedProduct} 
+                product={selectedProduct as any} 
                 onClose={() => setSelectedProduct(null)} 
             />
             
