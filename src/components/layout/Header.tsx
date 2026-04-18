@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import clsx from 'clsx';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useCart } from '../../contexts/CartContext';
 import Button from '../ui/Button';
@@ -8,6 +10,8 @@ import CartDrawer from './CartDrawer';
 import { useGetProductCategories, useGetBrands } from '../../hooks/queries/useProducts';
 
 const Header = () => {
+    const location = useLocation();
+    const isLandingPage = location.pathname === '/';
     const { scrollY } = useScroll();
     const { theme, toggleTheme } = useTheme();
     const { cart, cartCount } = useCart();
@@ -31,29 +35,29 @@ const Header = () => {
         }
     }, [isMobileMenuOpen, isCartOpen]);
 
-    // Add a dark/light glass effect when scrolling past the hero
+    // Add a dark/light glass effect when scrolling past the hero (only on landing page)
     const backgroundColor = useTransform(
         scrollY,
         [0, 100],
-        ["rgba(0, 0, 0, 0)", "var(--salon-base)"]
+        [isLandingPage ? "rgba(0, 0, 0, 0)" : "var(--salon-base)", "var(--salon-base)"]
     );
 
     const backdropBlur = useTransform(
         scrollY,
         [0, 100],
-        ["blur(0px)", "blur(12px)"]
+        [isLandingPage ? "blur(0px)" : "blur(12px)", "blur(12px)"]
     );
 
     const headerTextColor = useTransform(
         scrollY,
         [0, 100],
-        ["rgba(255, 255, 255, 0.95)", "var(--salon-primary)"]
+        [isLandingPage ? "rgba(255, 255, 255, 0.95)" : "var(--salon-primary)", "var(--salon-primary)"]
     );
 
     const borderBottom = useTransform(
         scrollY,
         [0, 100],
-        ["1px solid rgba(197, 160, 89, 0.1)", "1px solid rgba(197, 160, 89, 0.3)"]
+        [isLandingPage ? "1px solid rgba(197, 160, 89, 0.1)" : "1px solid rgba(197, 160, 89, 0.3)", "1px solid rgba(197, 160, 89, 0.3)"]
     );
 
     return (
@@ -152,9 +156,10 @@ const Header = () => {
                     </button>
 
                     {/* Cart Icon */}
-                    <div
+                    <motion.div
                         onClick={() => setIsCartOpen(true)}
-                        className="relative cursor-pointer w-11 h-11 flex flex-col justify-center items-center text-salon-primary hover:text-salon-golden transition-colors group"
+                        style={{ color: headerTextColor }}
+                        className="relative cursor-pointer w-11 h-11 flex flex-col justify-center items-center hover:text-salon-golden transition-colors group"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -193,11 +198,21 @@ const Header = () => {
                                 <span className="text-lg text-salon-golden">${cartTotal.toFixed(2)}</span>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    <Button as="a" href="/booking" variant="link" className="hidden md:block text-salon-primary hover:text-salon-golden border-b border-transparent hover:border-salon-golden ml-4">
-                        Book Now
-                    </Button>
+                    <motion.div
+                        className="hidden md:block ml-4"
+                        style={{ color: headerTextColor }}
+                    >
+                        <Button 
+                            as="a" 
+                            href="/booking" 
+                            variant="link" 
+                            className="text-inherit hover:text-salon-golden border-b border-transparent hover:border-salon-golden transition-colors"
+                        >
+                            Book Now
+                        </Button>
+                    </motion.div>
 
                     {/* Mobile Hamburger Layout */}
                     <Button
