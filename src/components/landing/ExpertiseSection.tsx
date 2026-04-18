@@ -50,7 +50,7 @@ const ExpertiseSection = () => {
                 <div className="flex flex-col gap-0 border-t border-salon-surface relative">
                     {displayStaff.map((item, idx) => (
                         <motion.a
-                            href="/booking"
+                            href={`/experts/${item.id}`}
                             key={item.id || idx}
                             initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -86,7 +86,7 @@ const ExpertiseSection = () => {
                                     <img src={item.avatar_url || "https://images.unsplash.com/photo-1599351431202-1e0f0137899a"} alt={item.name} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-[2000ms]" />
                                 </div>
                                 <div className="flex items-center gap-2 group/btn">
-                                    <span className="text-[10px] uppercase tracking-widest text-salon-golden translate-x-3 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">Book</span>
+                                    <span className="text-[10px] uppercase tracking-widest text-salon-golden translate-x-3 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">Profile</span>
                                     <svg className="w-5 h-5 text-salon-golden transition-transform duration-500 group-hover:rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                     </svg>

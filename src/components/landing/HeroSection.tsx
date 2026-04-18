@@ -57,7 +57,7 @@ const defaultSlides: HeroSlide[] = [
 const HeroSection = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const { data: bootstrapData } = useGetBootstrapSettings();
-    
+
     const rawSlides = bootstrapData?.data?.hero_slides;
     const slides: HeroSlide[] = rawSlides?.length ? rawSlides : defaultSlides;
 
@@ -88,7 +88,7 @@ const HeroSection = () => {
                         <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/40 to-[#050505] z-10" />
                         <img
                             src={slide.img}
-                            alt="Saloon Saleh Hero"
+                            alt="Salon Saleh Hero"
                             className="w-full h-full object-cover filter grayscale-[30%] object-[center_30%]"
                         />
                     </motion.div>

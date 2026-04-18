@@ -2,6 +2,8 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '@store/hooks';
 import LoginPage from '@pages/auth/LoginPage';
 import AuthLayout from '@layouts/AuthLayout';
+import ForgotPasswordPage from '@pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from '@pages/auth/ResetPasswordPage';
 import PortalLayout from '@layouts/PortalLayout';
 
 // Public Pages
@@ -11,6 +13,9 @@ import BookingPage from '@pages/BookingPage';
 import CartPage from '@pages/CartPage';
 import CheckoutPage from '@pages/CheckoutPage';
 import OrderSuccessPage from '@pages/OrderSuccessPage';
+import ExpertProfilePage from '@pages/ExpertProfilePage';
+import BlogDetailPage from '@pages/BlogDetailPage';
+import BlogListPage from '@pages/BlogListPage';
 
 // Admin Portal Pages
 import AdminDashboard from '@pages/admin/AdminDashboard';
@@ -23,10 +28,13 @@ import AdminCoupons from '@pages/admin/AdminCoupons';
 import AdminWaitlist from '@pages/admin/AdminWaitlist';
 import AdminReports from '@pages/admin/AdminReports';
 import AdminSiteSettings from '@pages/admin/AdminSiteSettings';
+import AdminBlogs from '@pages/admin/AdminBlogs';
 
 // Staff Portal Pages
 import StaffDashboard from '@pages/staff/StaffDashboard';
 import StaffBookings from '@pages/staff/StaffBookings';
+import StaffProfile from '@pages/staff/StaffProfile';
+import StaffBlogs from '@pages/staff/StaffBlogs';
 
 // Protected Route Guard
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles: string[] }) => {
@@ -71,6 +79,9 @@ const AppRoutes = () => {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order-success" element={<OrderSuccessPage />} />
+            <Route path="/blogs" element={<BlogListPage />} />
+            <Route path="/blogs/:slug" element={<BlogDetailPage />} />
+            <Route path="/experts/:id" element={<ExpertProfilePage />} />
 
             {/* ─── AUTHENTICATION ─── */}
             <Route
@@ -79,6 +90,26 @@ const AppRoutes = () => {
                     <PublicRoute>
                         <AuthLayout>
                             <LoginPage />
+                        </AuthLayout>
+                    </PublicRoute>
+                }
+            />
+            <Route
+                path="/forgot-password"
+                element={
+                    <PublicRoute>
+                        <AuthLayout>
+                            <ForgotPasswordPage />
+                        </AuthLayout>
+                    </PublicRoute>
+                }
+            />
+            <Route
+                path="/reset-password"
+                element={
+                    <PublicRoute>
+                        <AuthLayout>
+                            <ResetPasswordPage />
                         </AuthLayout>
                     </PublicRoute>
                 }
@@ -98,6 +129,7 @@ const AppRoutes = () => {
                             <Route path="coupons" element={<AdminCoupons />} />
                             <Route path="waitlist" element={<AdminWaitlist />} />
                             <Route path="reports" element={<AdminReports />} />
+                            <Route path="blogs" element={<AdminBlogs />} />
                             <Route path="settings" element={<AdminSiteSettings />} />
                             <Route path="users" element={<div className="p-8 font-serif text-salon-primary">Users Management (Coming Soon)</div>} />
                             <Route path="*" element={<Navigate to="dashboard" replace />} />
@@ -113,6 +145,8 @@ const AppRoutes = () => {
                         <Routes>
                             <Route path="dashboard" element={<StaffDashboard />} />
                             <Route path="bookings" element={<StaffBookings />} />
+                             <Route path="portfolio" element={<StaffProfile />} />
+                            <Route path="blogs" element={<StaffBlogs />} />
                             <Route path="*" element={<Navigate to="dashboard" replace />} />
                         </Routes>
                     </PortalLayout>

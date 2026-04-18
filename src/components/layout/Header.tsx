@@ -13,13 +13,13 @@ const Header = () => {
     const { cart, cartCount } = useCart();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
-    
+
     const { data: categoriesData } = useGetProductCategories();
     const { data: brandsData } = useGetBrands();
 
     const categories = (categoriesData?.data as any)?.categories || categoriesData?.data || [];
     const brands = (brandsData?.data as any)?.brands || brandsData?.data || [];
-    
+
     const cartTotal = cart.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
 
     // Prevent scrolling when mobile menu/cart is open
@@ -57,22 +57,23 @@ const Header = () => {
                 className="fixed top-0 w-full px-6 md:px-12 py-4 flex justify-between items-center z-[50] transition-colors duration-300"
             >
                 <div className="flex items-center gap-3 cursor-pointer z-50">
-                    <img src="/Main_logo_wo_BG.png" alt="Saloon Saleh Logo" className="w-8 h-8 object-contain" />
+                    <img src="/Main_logo_wo_BG.png" alt="Salon Saleh Logo" className="w-8 h-8 object-contain" />
                     <div className="flex flex-col -gap-1">
-                        <span className="text-lg md:text-xl font-serif text-salon-primary tracking-tighter leading-none">SALOON SALEH</span>
+                        <span className="text-lg md:text-xl font-serif text-salon-primary tracking-tighter leading-none">SALON SALEH</span>
                         <span className="text-[8px] uppercase tracking-[0.3em] text-salon-golden-muted">Haute Coiffure Homme</span>
                     </div>
                 </div>
 
                 <nav className="hidden lg:flex items-center gap-10 text-[9px] uppercase tracking-[0.3em] text-salon-golden-muted font-medium z-50">
                     <a href="/#expertise" className="hover:text-salon-golden transition-colors duration-300 py-4">Expertise</a>
+                    <a href="/blogs" className="hover:text-salon-golden transition-colors duration-300 py-4">Blogs</a>
                     <a href="/booking" className="hover:text-salon-golden transition-colors duration-300 py-4">Booking</a>
                     <div className="relative group/shop py-4">
                         <a href="/shop" className="hover:text-salon-golden transition-colors duration-300 flex items-center gap-1">
                             Shop
                             <svg className="w-3 h-3 text-salon-golden-muted group-hover/shop:text-salon-golden transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                         </a>
-                        
+
                         {/* Mega Menu Dropdown */}
                         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[400px] bg-salon-base border border-salon-golden/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-md opacity-0 invisible group-hover/shop:opacity-100 group-hover/shop:visible transition-all duration-300 z-[100] flex p-8 gap-12 before:content-[''] before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:bg-transparent">
                             <div className="flex-1">
@@ -114,7 +115,7 @@ const Header = () => {
                         <div className="relative w-5 h-5 md:w-6 md:h-6">
                             <AnimatePresence mode="wait">
                                 {theme === 'dark' ? (
-                                    <motion.svg 
+                                    <motion.svg
                                         key="sun"
                                         initial={{ opacity: 0, scale: 0.8, rotate: -45 }}
                                         animate={{ opacity: 1, scale: 1, rotate: 0 }}
@@ -125,7 +126,7 @@ const Header = () => {
                                         <path strokeLinecap="round" d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
                                     </motion.svg>
                                 ) : (
-                                    <motion.svg 
+                                    <motion.svg
                                         key="moon"
                                         initial={{ opacity: 0, scale: 0.8, rotate: 45 }}
                                         animate={{ opacity: 1, scale: 1, rotate: 0 }}
@@ -140,7 +141,7 @@ const Header = () => {
                     </button>
 
                     {/* Cart Icon */}
-                    <div 
+                    <div
                         onClick={() => setIsCartOpen(true)}
                         className="relative cursor-pointer w-11 h-11 flex flex-col justify-center items-center text-salon-primary hover:text-salon-golden transition-colors group"
                     >
@@ -188,9 +189,9 @@ const Header = () => {
                     </Button>
 
                     {/* Mobile Hamburger Layout */}
-                    <Button 
+                    <Button
                         onClick={() => setIsMobileMenuOpen(true)}
-                        variant="link" 
+                        variant="link"
                         className="lg:hidden text-salon-primary ml-2 p-0"
                     >
                         <div className="flex flex-col gap-1.5 items-end">

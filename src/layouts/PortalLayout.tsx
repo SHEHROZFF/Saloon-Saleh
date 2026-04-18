@@ -37,6 +37,7 @@ const PortalLayout = ({ children }: PortalLayoutProps) => {
         { name: 'Bookings', path: '/admin/bookings', icon: CalendarRange },
         { name: 'Orders', path: '/admin/orders', icon: ShoppingBag },
         { name: 'Reports', path: '/admin/reports', icon: TrendingUp },
+        { name: 'Expert Blogs', path: '/admin/blogs', icon: ClipboardList },
         { name: 'Products', path: '/admin/products', icon: Package },
         { name: 'Services', path: '/admin/services', icon: Scissors },
         { name: 'Staff Members', path: '/admin/staff', icon: Users },
@@ -49,6 +50,8 @@ const PortalLayout = ({ children }: PortalLayoutProps) => {
     const staffNavItems = [
         { name: 'My Dashboard', path: '/staff/dashboard', icon: LayoutDashboard },
         { name: 'My Schedule', path: '/staff/bookings', icon: CalendarRange },
+        { name: 'My Profile', path: '/staff/portfolio', icon: UserCircle },
+        { name: 'My Blogs', path: '/staff/blogs', icon: ClipboardList },
     ];
 
     const navItems = isStaff ? staffNavItems : adminNavItems;
@@ -66,9 +69,9 @@ const PortalLayout = ({ children }: PortalLayoutProps) => {
             {/* Desktop Sidebar */}
             <aside className="hidden lg:flex w-72 flex-col bg-salon-base border-r border-salon-golden/10 z-20 shadow-[10px_0_30px_rgba(0,0,0,0.2)] dark:shadow-none">
                 <div className="h-24 flex items-center px-8 border-b border-salon-golden/10 bg-salon-surface/30">
-                    <img src="/Main_logo_wo_BG.png" alt="Saloon Saleh" className="h-10 w-10 object-contain mr-3" />
+                    <img src="/Main_logo_wo_BG.png" alt="Salon Saleh" className="h-10 w-10 object-contain mr-3" />
                     <div className="flex flex-col">
-                        <span className="font-serif text-lg tracking-wider text-salon-primary leading-tight">SALOON SALEH</span>
+                        <span className="font-serif text-lg tracking-wider text-salon-primary leading-tight">SALON SALEH</span>
                         <span className="text-[9px] uppercase tracking-[0.3em] text-salon-golden-muted">{isStaff ? 'Staff Portal' : 'Admin Portal'}</span>
                     </div>
                 </div>
@@ -130,8 +133,8 @@ const PortalLayout = ({ children }: PortalLayoutProps) => {
             {/* Mobile Header & Sidebar overlay */}
             <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-salon-base z-30 border-b border-salon-golden/10 flex justify-between items-center px-4 shadow-sm">
                 <div className="flex items-center gap-2">
-                    <img src="/Main_logo_wo_BG.png" alt="Saloon Saleh" className="h-7 w-7 object-contain" />
-                    <span className="font-serif text-sm tracking-wider text-salon-primary">SALOON SALEH</span>
+                    <img src="/Main_logo_wo_BG.png" alt="Salon Saleh" className="h-7 w-7 object-contain" />
+                    <span className="font-serif text-sm tracking-wider text-salon-primary">SALON SALEH</span>
                 </div>
                 <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

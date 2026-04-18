@@ -31,7 +31,7 @@ export const shopProducts: Product[] = [
     {
         id: 'p1',
         title: 'Premium Beard Oil',
-        brand: 'Saloon Saleh',
+        brand: 'Salon Saleh',
         price: '45.00',
         img: 'https://images.unsplash.com/photo-1590156206659-9993ed6e9d69?q=80&w=1287&auto=format&fit=crop',
         category: 'Beard Care',
@@ -43,7 +43,7 @@ export const shopProducts: Product[] = [
     {
         id: 'p2',
         title: 'Matte Clay Wax',
-        brand: 'Saloon Saleh',
+        brand: 'Salon Saleh',
         price: '38.00',
         img: 'https://images.unsplash.com/photo-1592647420248-b730bf656201?q=80&w=1287&auto=format&fit=crop',
         category: 'Hair Styling',
@@ -55,7 +55,7 @@ export const shopProducts: Product[] = [
     {
         id: 'p3',
         title: 'Revitalizing Face Wash',
-        brand: 'Saloon Saleh',
+        brand: 'Salon Saleh',
         price: '32.00',
         img: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=1287&auto=format&fit=crop',
         category: 'Skin Care',
@@ -67,7 +67,7 @@ export const shopProducts: Product[] = [
     {
         id: 'p4',
         title: 'Classic Shave Cream',
-        brand: 'Saloon Saleh',
+        brand: 'Salon Saleh',
         price: '28.00',
         img: 'https://images.unsplash.com/photo-1626285861696-9f0bf5a49c6a?q=80&w=1332&auto=format&fit=crop',
         category: 'Shaving',
@@ -79,7 +79,7 @@ export const shopProducts: Product[] = [
     {
         id: 'p5',
         title: 'Sea Salt Spray',
-        brand: 'Saloon Saleh',
+        brand: 'Salon Saleh',
         price: '35.00',
         img: 'https://images.unsplash.com/photo-1552046122-03184de85e08?q=80&w=1287&auto=format&fit=crop',
         category: 'Hair Styling',

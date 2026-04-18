@@ -31,7 +31,7 @@ const DEFAULT_FOOTER: FooterData = {
         { label: "WhatsApp", url: "https://wa.me/971557441551" },
         { label: "Facebook", url: "" },
     ],
-    copyrightName: "SALOON SALEH",
+    copyrightName: "SALON SALEH",
     appStoreUrl: "https://apps.apple.com/us/app/id1571552874",
     playStoreUrl: "https://play.google.com/store/apps/details?id=com.hazem.stylish_by_hazem",
 };
@@ -65,9 +65,9 @@ const Footer = () => {
 
                     {/* Footer Logo + App Store Badges */}
                     <div className="mb-4 lg:mb-0">
-                        <img src="/Main_logo_wo_BG.png" alt="Saloon Saleh Logo" className="w-14 md:w-18 h-auto object-contain mb-3" />
+                        <img src="/Main_logo_wo_BG.png" alt="SALON SALEH Logo" className="w-14 md:w-18 h-auto object-contain mb-3" />
                         <h2 className="text-[2rem] md:text-[3.5rem] lg:text-[4.5rem] font-serif font-normal leading-[0.8] tracking-tighter">
-                            SALOON<span className="text-salon-golden">SALEH.</span>
+                            SALON<span className="text-salon-golden">SALEH.</span>
                         </h2>
 
                         <div className="flex gap-4 mt-5">

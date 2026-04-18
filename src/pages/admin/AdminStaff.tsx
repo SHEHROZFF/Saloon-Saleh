@@ -46,6 +46,7 @@ const AdminStaff = () => {
                         <tr className="border-b border-salon-golden/20">
                             <th className="pb-3 text-[10px] uppercase tracking-widest text-salon-muted font-normal">Name</th>
                             <th className="pb-3 text-[10px] uppercase tracking-widest text-salon-muted font-normal">Role</th>
+                            <th className="pb-3 text-[10px] uppercase tracking-widest text-salon-muted font-normal">Specialties</th>
                             <th className="pb-3 text-[10px] uppercase tracking-widest text-salon-muted font-normal">Phone</th>
                             <th className="pb-3 text-[10px] uppercase tracking-widest text-salon-muted font-normal">Status</th>
                             <th className="pb-3 text-[10px] uppercase tracking-widest text-salon-muted font-normal text-right">Actions</th>
@@ -63,6 +64,16 @@ const AdminStaff = () => {
                                     {s.name}
                                 </td>
                                 <td className="py-4 text-sm text-salon-muted">{s.role}</td>
+                                <td className="py-4 text-sm">
+                                    <div className="flex flex-wrap gap-1">
+                                        {s.specialties?.slice(0, 2).map((spec: string, i: number) => (
+                                            <span key={i} className="px-2 py-0.5 bg-salon-golden/10 text-salon-golden text-[8px] uppercase rounded-sm">
+                                                {spec}
+                                            </span>
+                                        ))}
+                                        {s.specialties?.length > 2 && <span className="text-[8px] text-salon-muted">+{s.specialties.length - 2}</span>}
+                                    </div>
+                                </td>
                                 <td className="py-4 text-sm">{s.phone || 'N/A'}</td>
                                 <td className="py-4 text-[10px] uppercase tracking-wider">{s.is_active ? 'Active' : 'Inactive'}</td>
                                 <td className="py-4 text-right">

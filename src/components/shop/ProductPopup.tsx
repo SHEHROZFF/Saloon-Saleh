@@ -74,7 +74,7 @@ const ProductPopup: React.FC<ProductPopupProps> = ({ product, onClose }) => {
                             {/* Decorative Brand Badge */}
                             <div className="absolute bottom-10 left-10">
                                 <span className="text-[9px] uppercase tracking-[0.5em] text-white/50 mb-2 block font-bold">The Collection</span>
-                                <h3 className="text-xl font-serif text-white italic">Saloon Saleh</h3>
+                                <h3 className="text-xl font-serif text-white italic">Salon Saleh</h3>
                             </div>
                         </div>
 

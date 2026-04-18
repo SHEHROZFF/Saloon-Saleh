@@ -14,10 +14,14 @@ export interface Order {
     order_status: 'awaiting' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
     created_at: string;
     customer_name?: string;
+    first_name?: string;
+    last_name?: string;
+    customer_email?: string;
     items_count?: number;
     billing_address?: any;
     shipping_address?: any;
     items?: any[];
+    order_notes?: string;
 }
 
 export const orderService = {
@@ -35,11 +39,15 @@ export const orderService = {
     },
 
     getOrderDetails: async (id: string) => {
-        return apiClient.get<{ data: Order }>(`/orders/${id}`);
+        return apiClient.get<{ data: { order: Order } }>(`/orders/${id}`);
     },
 
     updateStatus: async (id: string, updates: { order_status?: string; payment_status?: string }) => {
         return apiClient.patch<{ data: Order }>(`/orders/${id}/status`, updates);
+    },
+
+    updateOrder: async (id: string, data: any) => {
+        return apiClient.patch<{ data: Order }>(`/orders/${id}`, data);
     }
 };
 
@@ -59,5 +67,9 @@ export const couponService = {
 
     deleteCoupon: async (id: string) => {
         return apiClient.delete(`/coupons/${id}`);
+    },
+
+    distributeCoupon: async (data: { coupon_id: string; emails: string[] }) => {
+        return apiClient.post('/coupons/distribute', data);
     }
 };

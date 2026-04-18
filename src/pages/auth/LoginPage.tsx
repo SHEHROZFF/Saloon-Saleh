@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useAppDispatch } from '@store/hooks';
@@ -83,7 +83,7 @@ const LoginPage = () => {
                         type="email"
                         {...formik.getFieldProps('email')}
                         className={`w-full bg-salon-surface/50 border ${formik.touched.email && formik.errors.email ? 'border-red-500/50' : 'border-salon-golden/20'} rounded p-3 text-sm text-salon-primary placeholder-salon-muted focus:outline-none focus:border-salon-golden transition-colors`}
-                        placeholder="admin@saloonsaleh.com"
+                        placeholder="admin@salonsaleh.com"
                     />
                     {formik.touched.email && formik.errors.email && (
                         <p className="mt-1.5 text-[10px] text-red-500 uppercase tracking-wider">{formik.errors.email}</p>
@@ -95,9 +95,9 @@ const LoginPage = () => {
                         <label className="block text-[10px] uppercase font-medium tracking-widest text-salon-primary">
                             Password
                         </label>
-                        <button type="button" className="text-[10px] text-salon-golden-muted hover:text-salon-golden transition-colors">
-                            Forgot?
-                        </button>
+                        <Link to="/forgot-password" className="text-[10px] text-salon-golden-muted hover:text-salon-golden transition-colors">
+                            Forgot Password ?
+                        </Link>
                     </div>
                     <input
                         type="password"

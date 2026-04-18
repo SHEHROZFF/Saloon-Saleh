@@ -9,6 +9,7 @@ interface MobileNavProps {
 const MobileNav = ({ isOpen, onClose }: MobileNavProps) => {
     const navItems = [
         { label: 'Expertise', href: '/#expertise' },
+        { label: 'Blogs', href: '/blogs' },
         { label: 'Booking', href: '/booking' },
         { label: 'Shop', href: '/shop' },
     ];
@@ -36,10 +37,10 @@ const MobileNav = ({ isOpen, onClose }: MobileNavProps) => {
                     >
                         <div className="flex justify-between items-center mb-12">
                             <div className="flex items-center gap-3">
-                                <img src="/Main_logo_wo_BG.png" alt="Saloon Saleh Logo" className="w-8 h-8 object-contain" />
-                                <span className="text-xl font-serif text-salon-primary tracking-tighter">SALOON SALEH</span>
+                                <img src="/Main_logo_wo_BG.png" alt="Salon Saleh Logo" className="w-8 h-8 object-contain" />
+                                <span className="text-xl font-serif text-salon-primary tracking-tighter">SALON SALEH</span>
                             </div>
-                            <button 
+                            <button
                                 onClick={onClose}
                                 className="w-10 h-10 rounded-full border border-salon-golden/20 flex items-center justify-center text-salon-primary"
                             >
@@ -69,7 +70,7 @@ const MobileNav = ({ isOpen, onClose }: MobileNavProps) => {
                             <Button as="a" href="/booking" variant="golden" className="w-full h-14 text-sm tracking-[0.2em]">
                                 Book Appointment
                             </Button>
-                            
+
                             <div className="flex flex-col gap-2 text-center text-[10px] uppercase tracking-[0.3em] text-salon-golden-muted">
                                 <span>123 Elite Avenue, Dubai</span>
                                 <span>Mon - Sun: 10:00 - 22:00</span>

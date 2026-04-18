@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Send } from 'lucide-react';
 import { useGetAllCoupons, useDeleteCoupon } from '../../hooks/queries/useOrders';
 import AdminSlideOver from '../../components/admin/AdminSlideOver';
 import CouponForm from '../../components/admin/forms/CouponForm';
+import DistributeCouponForm from '../../components/admin/forms/DistributeCouponForm';
 
 const AdminCoupons = () => {
     const { data, isLoading } = useGetAllCoupons();
@@ -10,14 +11,19 @@ const AdminCoupons = () => {
     const coupons = (data?.data as any)?.coupons || data?.data || [];
 
     const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
+    const [isDistributeOpen, setIsDistributeOpen] = useState(false);
+    const [selectedCoupon, setSelectedCoupon] = useState<any>(null);
 
     const handleAddClick = () => {
         setIsSlideOverOpen(true);
     };
 
-    const handleCloseSlideOver = () => {
-        setIsSlideOverOpen(false);
+    const handleDistributeClick = (coupon: any) => {
+        setSelectedCoupon(coupon);
+        setIsDistributeOpen(true);
     };
+
+
 
     return (
         <div className="space-y-6 animate-in fade-in">
@@ -55,7 +61,18 @@ const AdminCoupons = () => {
                                 <td className="py-4 text-[10px] uppercase tracking-wider">{c.is_active ? 'Active' : 'Inactive'}</td>
                                 <td className="py-4 text-right">
                                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => confirm('Delete coupon permanently?') && deleteCoupon(c.id)} className="text-salon-muted hover:text-red-500 p-1">
+                                        <button 
+                                            onClick={() => handleDistributeClick(c)}
+                                            className="text-salon-muted hover:text-salon-golden p-1 transition-colors"
+                                            title="Send via Email"
+                                        >
+                                            <Send className="w-4 h-4" />
+                                        </button>
+                                        <button 
+                                            onClick={() => confirm('Delete coupon permanently?') && deleteCoupon(c.id)} 
+                                            className="text-salon-muted hover:text-red-500 p-1 transition-colors"
+                                            title="Delete"
+                                        >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
@@ -68,10 +85,23 @@ const AdminCoupons = () => {
 
             <AdminSlideOver 
                 isOpen={isSlideOverOpen} 
-                onClose={handleCloseSlideOver}
+                onClose={() => setIsSlideOverOpen(false)}
                 title="Create New Coupon"
             >
-                <CouponForm onClose={handleCloseSlideOver} />
+                <CouponForm onClose={() => setIsSlideOverOpen(false)} />
+            </AdminSlideOver>
+
+            <AdminSlideOver 
+                isOpen={isDistributeOpen} 
+                onClose={() => setIsDistributeOpen(false)}
+                title="Distribute Coupon"
+            >
+                {selectedCoupon && (
+                    <DistributeCouponForm 
+                        coupon={selectedCoupon} 
+                        onClose={() => setIsDistributeOpen(false)} 
+                    />
+                )}
             </AdminSlideOver>
         </div>
     );

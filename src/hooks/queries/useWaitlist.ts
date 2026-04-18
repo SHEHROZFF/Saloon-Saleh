@@ -10,7 +10,7 @@ export const useGetWaitlist = (params?: { page?: number; limit?: number; status?
 
 export const useSubmitWaitlist = () => {
     return useMutation({
-        mutationFn: (data: { full_name: string; phone: string; desired_service: string }) => 
+        mutationFn: (data: { full_name: string; phone: string; email: string; desired_service: string }) => 
             waitlistService.submitWaitlist(data),
     });
 };

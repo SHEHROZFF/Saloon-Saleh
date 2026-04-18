@@ -11,12 +11,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onClose }) => {
     const { mutate: createProduct, isPending: isCreating } = useCreateProduct();
     const { mutate: updateProduct, isPending: isUpdating } = useUpdateProduct();
     const { data: categoriesData } = useGetProductCategories();
-    
+
     const categories = (categoriesData?.data as any)?.categories || categoriesData?.data || [];
 
     const [formData, setFormData] = useState<Partial<Product>>({
         title: '',
-        brand: 'Saloon Saleh',
+        brand: 'Salon Saleh',
         price: '',
         image_url: '',
         category_id: '',
@@ -32,7 +32,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onClose }) => {
         if (initialData) {
             setFormData({
                 title: initialData.title || '',
-                brand: initialData.brand || 'Saloon Saleh',
+                brand: initialData.brand || 'Salon Saleh',
                 price: initialData.price || '',
                 image_url: initialData.image_url || '',
                 category_id: initialData.category_id || '',
@@ -48,7 +48,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onClose }) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (initialData) {
             updateProduct({ id: initialData.id, data: formData }, {
                 onSuccess: () => onClose()

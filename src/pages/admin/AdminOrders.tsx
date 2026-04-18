@@ -1,12 +1,22 @@
 import { useState } from 'react';
-import { Search, Eye, Edit } from 'lucide-react';
-
+import { Search, Edit } from 'lucide-react';
 import { useGetAllOrders } from '../../hooks/queries/useOrders';
+import AdminSlideOver from '../../components/admin/AdminSlideOver';
+import OrderEditForm from '../../components/admin/forms/OrderEditForm';
 
 const AdminOrders = () => {
     const [search, setSearch] = useState('');
-    const { data, isLoading } = useGetAllOrders();
+    const [statusFilter, setStatusFilter] = useState('');
+    const { data, isLoading } = useGetAllOrders({ order_status: statusFilter });
     const orders = data?.data?.orders || [];
+
+    const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState<any>(null);
+
+    const handleEditClick = (order: any) => {
+        setSelectedOrder(order);
+        setIsSlideOverOpen(true);
+    };
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
@@ -29,10 +39,17 @@ const AdminOrders = () => {
                     />
                 </div>
                 <div className="flex gap-2">
-                    <select className="bg-salon-base border border-salon-golden/20 rounded px-4 py-2.5 text-sm text-salon-primary focus:outline-none focus:border-salon-golden appearance-none cursor-pointer">
+                    <select 
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="bg-salon-base border border-salon-golden/20 rounded px-4 py-2.5 text-sm text-salon-primary focus:outline-none focus:border-salon-golden appearance-none cursor-pointer"
+                    >
                         <option value="">All Statuses</option>
-                        <option value="pending">Processing</option>
+                        <option value="awaiting">Awaiting</option>
+                        <option value="processing">Processing</option>
                         <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
                     </select>
                 </div>
             </div>
@@ -56,9 +73,10 @@ const AdminOrders = () => {
                                 <tr><td colSpan={7} className="text-center py-10">Loading orders...</td></tr>
                             ) : orders.map((order: any) => (
                                 <tr key={order.id} className="border-b border-salon-golden/5 hover:bg-salon-surface/50 transition-colors group">
-                                    <td className="p-4 text-xs font-serif text-salon-golden">{order.id.substring(0, 8).toUpperCase()}</td>
+                                    <td className="p-4 text-xs font-serif text-salon-golden">{order.order_number}</td>
                                     <td className="p-4">
-                                        <div className="text-sm font-medium text-salon-primary">{order.billing_address?.firstName} {order.billing_address?.lastName || 'N/A'}</div>
+                                        <div className="text-sm font-medium text-salon-primary">{order.first_name} {order.last_name || 'Guest'}</div>
+                                        <div className="text-[10px] text-salon-muted lowercase">{order.customer_email}</div>
                                     </td>
                                     <td className="p-4 text-sm font-medium text-salon-primary">{new Date(order.created_at).toLocaleDateString()}</td>
                                     <td className="p-4 text-sm font-serif text-salon-primary">${typeof order.total === 'string' ? parseFloat(order.total).toFixed(2) : order.total}</td>
@@ -83,8 +101,12 @@ const AdminOrders = () => {
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="p-1.5 text-salon-muted hover:text-salon-golden transition-colors"><Eye className="w-4 h-4" /></button>
-                                            <button className="p-1.5 text-salon-muted hover:text-salon-primary transition-colors"><Edit className="w-4 h-4" /></button>
+                                            <button 
+                                                onClick={() => handleEditClick(order)}
+                                                className="p-1.5 text-salon-muted hover:text-salon-golden transition-colors"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -93,6 +115,19 @@ const AdminOrders = () => {
                     </table>
                 </div>
             </div>
+
+            <AdminSlideOver 
+                isOpen={isSlideOverOpen} 
+                onClose={() => setIsSlideOverOpen(false)}
+                title="Edit Order Details"
+            >
+                {selectedOrder && (
+                    <OrderEditForm 
+                        orderId={selectedOrder.id} 
+                        onClose={() => setIsSlideOverOpen(false)} 
+                    />
+                )}
+            </AdminSlideOver>
         </div>
     );
 };

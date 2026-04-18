@@ -13,7 +13,7 @@ const CheckoutPage = () => {
     const navigate = useNavigate();
     const [shipToDifferent, setShipToDifferent] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('cod');
-    
+
     // Mock shipping cost logic (sharing with CartPage logic typically via state/context in real app)
     const shippingCost = 3.00;
     const grandTotal = cartTotal + shippingCost;
@@ -22,10 +22,13 @@ const CheckoutPage = () => {
     const [billingDetails, setBillingDetails] = useState({
         firstName: '', lastName: '', address: '', city: '', phone: '', email: '', country: 'UK', postcode: ''
     });
+    const [shippingDetails, setShippingDetails] = useState({
+        firstName: '', lastName: '', address: '', city: '', postcode: ''
+    });
 
     const handlePlaceOrder = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const orderPayload = {
             subtotal: cartTotal,
             shipping_cost: shippingCost,
@@ -37,7 +40,7 @@ const CheckoutPage = () => {
             items: cart.map(item => ({
                 product_id: item.id,
                 product_title: item.title,
-                product_brand: item.brand || 'Saloon Saleh',
+                product_brand: item.brand || 'Salon Saleh',
                 price: Number(item.price),
                 quantity: item.quantity
             })),
@@ -50,7 +53,14 @@ const CheckoutPage = () => {
                 postcode: billingDetails.postcode,
                 phone: billingDetails.phone,
                 email: billingDetails.email
-            }
+            },
+            shipping_address: shipToDifferent ? {
+                first_name: shippingDetails.firstName || billingDetails.firstName,
+                last_name: shippingDetails.lastName || billingDetails.lastName,
+                street_address: shippingDetails.address || billingDetails.address,
+                city: shippingDetails.city || billingDetails.city,
+                postcode: shippingDetails.postcode || billingDetails.postcode
+            } : null
         };
 
         mutate(orderPayload, {
@@ -74,7 +84,7 @@ const CheckoutPage = () => {
             <label className="text-[10px] uppercase tracking-[0.2em] text-salon-golden-muted font-bold block px-1">
                 {label} {required && <span className="text-red-500">*</span>}
             </label>
-            <input 
+            <input
                 type={type}
                 required={required}
                 placeholder={placeholder}
@@ -104,19 +114,19 @@ const CheckoutPage = () => {
                         <section className="space-y-8">
                             <h3 className="text-2xl font-serif border-b border-salon-golden/10 pb-6 uppercase tracking-widest">Billing Details</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormInput label="First Name" placeholder="e.g. John" value={billingDetails.firstName} onChange={(e:any) => setBillingDetails({...billingDetails, firstName: e.target.value})} />
-                                <FormInput label="Last Name" placeholder="e.g. Doe" value={billingDetails.lastName} onChange={(e:any) => setBillingDetails({...billingDetails, lastName: e.target.value})} />
+                                <FormInput label="First Name" placeholder="e.g. John" value={billingDetails.firstName} onChange={(e: any) => setBillingDetails({ ...billingDetails, firstName: e.target.value })} />
+                                <FormInput label="Last Name" placeholder="e.g. Doe" value={billingDetails.lastName} onChange={(e: any) => setBillingDetails({ ...billingDetails, lastName: e.target.value })} />
                             </div>
                             <FormInput label="Company Name (Optional)" placeholder="e.g. Salon LTD" required={false} />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormInput label="Country" placeholder="e.g. United Kingdom" value={billingDetails.country} onChange={(e:any) => setBillingDetails({...billingDetails, country: e.target.value})} />
-                                <FormInput label="Town / City" placeholder="e.g. London" value={billingDetails.city} onChange={(e:any) => setBillingDetails({...billingDetails, city: e.target.value})} />
+                                <FormInput label="Country" placeholder="e.g. United Kingdom" value={billingDetails.country} onChange={(e: any) => setBillingDetails({ ...billingDetails, country: e.target.value })} />
+                                <FormInput label="Town / City" placeholder="e.g. London" value={billingDetails.city} onChange={(e: any) => setBillingDetails({ ...billingDetails, city: e.target.value })} />
                             </div>
-                            <FormInput label="Street Address" placeholder="House number and street name" value={billingDetails.address} onChange={(e:any) => setBillingDetails({...billingDetails, address: e.target.value})} />
-                            <FormInput label="Postcode" placeholder="e.g. EC1A 1BB" value={billingDetails.postcode} onChange={(e:any) => setBillingDetails({...billingDetails, postcode: e.target.value})} />
+                            <FormInput label="Street Address" placeholder="House number and street name" value={billingDetails.address} onChange={(e: any) => setBillingDetails({ ...billingDetails, address: e.target.value })} />
+                            <FormInput label="Postcode" placeholder="e.g. EC1A 1BB" value={billingDetails.postcode} onChange={(e: any) => setBillingDetails({ ...billingDetails, postcode: e.target.value })} />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormInput label="Phone" placeholder="+44 20 7946 0000" type="tel" value={billingDetails.phone} onChange={(e:any) => setBillingDetails({...billingDetails, phone: e.target.value})} />
-                                <FormInput label="Email Address" placeholder="john.doe@example.com" type="email" value={billingDetails.email} onChange={(e:any) => setBillingDetails({...billingDetails, email: e.target.value})} />
+                                <FormInput label="Phone" placeholder="+44 20 7946 0000" type="tel" value={billingDetails.phone} onChange={(e: any) => setBillingDetails({ ...billingDetails, phone: e.target.value })} />
+                                <FormInput label="Email Address" placeholder="john.doe@example.com" type="email" value={billingDetails.email} onChange={(e: any) => setBillingDetails({ ...billingDetails, email: e.target.value })} />
                             </div>
                         </section>
 
@@ -131,20 +141,20 @@ const CheckoutPage = () => {
 
                             <AnimatePresence>
                                 {shipToDifferent && (
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: 'auto', opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
                                         className="overflow-hidden space-y-8"
                                     >
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <FormInput label="Shipping First Name" placeholder="John" />
-                                            <FormInput label="Shipping Last Name" placeholder="Doe" />
+                                            <FormInput label="Shipping First Name" placeholder="John" value={shippingDetails.firstName} onChange={(e: any) => setShippingDetails({ ...shippingDetails, firstName: e.target.value })} />
+                                            <FormInput label="Shipping Last Name" placeholder="Doe" value={shippingDetails.lastName} onChange={(e: any) => setShippingDetails({ ...shippingDetails, lastName: e.target.value })} />
                                         </div>
-                                        <FormInput label="Shipping Street Address" placeholder="House number and street name" />
+                                        <FormInput label="Shipping Street Address" placeholder="House number and street name" value={shippingDetails.address} onChange={(e: any) => setShippingDetails({ ...shippingDetails, address: e.target.value })} />
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <FormInput label="Shipping Town / City" placeholder="London" />
-                                            <FormInput label="Shipping Postcode" placeholder="EC1A 1BB" />
+                                            <FormInput label="Shipping Town / City" placeholder="London" value={shippingDetails.city} onChange={(e: any) => setShippingDetails({ ...shippingDetails, city: e.target.value })} />
+                                            <FormInput label="Shipping Postcode" placeholder="EC1A 1BB" value={shippingDetails.postcode} onChange={(e: any) => setShippingDetails({ ...shippingDetails, postcode: e.target.value })} />
                                         </div>
                                     </motion.div>
                                 )}
@@ -153,7 +163,7 @@ const CheckoutPage = () => {
 
                         <div className="space-y-4">
                             <label className="text-[10px] uppercase tracking-[0.2em] text-salon-golden-muted font-bold block px-1">Order Notes (Optional)</label>
-                            <textarea 
+                            <textarea
                                 placeholder="Notes about your order, e.g. special notes for delivery."
                                 rows={4}
                                 className="w-full bg-salon-surface border border-salon-golden/10 px-6 py-4 text-xs focus:outline-none focus:border-salon-golden transition-all resize-none"
@@ -165,7 +175,7 @@ const CheckoutPage = () => {
                     <div className="w-full lg:w-[450px]">
                         <div className="bg-salon-surface border border-salon-golden/10 p-10 lg:sticky lg:top-40">
                             <h3 className="text-xl font-serif mb-8 border-b border-salon-golden/10 pb-6 uppercase tracking-widest text-center">Your Order</h3>
-                            
+
                             <div className="space-y-6">
                                 <div className="space-y-4 max-h-60 overflow-y-auto custom-scrollbar pr-2">
                                     {cart.map(item => (
@@ -197,20 +207,19 @@ const CheckoutPage = () => {
                                 {/* Payment Methods Selection */}
                                 <div className="pt-10 space-y-4">
                                     <h4 className="text-[10px] uppercase tracking-[0.3em] text-salon-golden font-bold mb-6">Ceremonial Payment</h4>
-                                    
+
                                     <div className="space-y-3">
                                         {[
                                             { id: 'cod', title: 'Cash on Delivery', desc: 'Pay with cash upon delivery. Ensure the exact amount is ready for the delivery ritual.' },
                                             { id: 'card', title: 'Credit / Debit Card', desc: 'Securely pay via Mastercard, Visa, or American Express.' },
                                             { id: 'transfer', title: 'Direct Bank Transfer', desc: 'Transfer directly to our vaults. Your ritual begins as soon as the funds clear.' }
                                         ].map((method) => (
-                                            <label 
+                                            <label
                                                 key={method.id}
-                                                className={`block cursor-pointer border transition-all p-5 ${
-                                                    paymentMethod === method.id 
-                                                    ? 'bg-salon-base/60 border-salon-golden' 
-                                                    : 'bg-salon-base/20 border-salon-golden/5 hover:border-salon-golden/20'
-                                                }`}
+                                                className={`block cursor-pointer border transition-all p-5 ${paymentMethod === method.id
+                                                        ? 'bg-salon-base/60 border-salon-golden'
+                                                        : 'bg-salon-base/20 border-salon-golden/5 hover:border-salon-golden/20'
+                                                    }`}
                                             >
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div className="flex items-center gap-3">
@@ -221,7 +230,7 @@ const CheckoutPage = () => {
                                                     </div>
                                                 </div>
                                                 {paymentMethod === method.id && (
-                                                    <motion.p 
+                                                    <motion.p
                                                         initial={{ opacity: 0, height: 0 }}
                                                         animate={{ opacity: 1, height: 'auto' }}
                                                         className="text-[11px] text-salon-golden-muted font-light leading-relaxed pl-6"
@@ -229,21 +238,21 @@ const CheckoutPage = () => {
                                                         {method.desc}
                                                     </motion.p>
                                                 )}
-                                                <input 
-                                                    type="radio" 
-                                                    value={method.id} 
-                                                    checked={paymentMethod === method.id} 
-                                                    onChange={() => setPaymentMethod(method.id)} 
-                                                    className="hidden" 
+                                                <input
+                                                    type="radio"
+                                                    value={method.id}
+                                                    checked={paymentMethod === method.id}
+                                                    onChange={() => setPaymentMethod(method.id)}
+                                                    className="hidden"
                                                 />
                                             </label>
                                         ))}
                                     </div>
                                 </div>
 
-                                <Button 
+                                <Button
                                     type="submit"
-                                    variant="golden" 
+                                    variant="golden"
                                     disabled={isPending}
                                     className="w-full h-16 text-[11px] uppercase tracking-[0.4em] font-bold shadow-[0_15px_40px_rgba(212,175,55,0.15)] group mt-8"
                                 >

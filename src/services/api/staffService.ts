@@ -17,7 +17,13 @@ export interface Staff {
     phone: string;
     email: string;
     is_active: boolean;
-    services?: string[]; // Array of service IDs this staff can perform
+    sort_order: number;
+    bio?: string;
+    specialties?: string[];
+    experience_years?: string;
+    instagram_url?: string;
+    linkedin_url?: string;
+    services?: { id: string; name: string }[];
 }
 
 export const staffService = {
@@ -26,7 +32,7 @@ export const staffService = {
     },
 
     getStaffById: async (id: string) => {
-        return apiClient.get<{ data: Staff }>(`/staff/${id}`);
+        return apiClient.get<{ data: { staff: Staff } }>(`/staff/${id}`);
     },
 
     // Admin endpoints
@@ -40,5 +46,14 @@ export const staffService = {
 
     deleteStaff: async (id: string) => {
         return apiClient.delete(`/staff/${id}`);
+    },
+
+    // Staff Self Management
+    getMyProfile: async () => {
+        return apiClient.get<{ data: { staff: Staff } }>('/staff/me');
+    },
+
+    updateMyProfile: async (data: Partial<Staff>) => {
+        return apiClient.patch<{ data: { staff: Staff } }>('/staff/me', data);
     }
 };

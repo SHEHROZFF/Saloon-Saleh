@@ -11,20 +11,20 @@ const BookingSection = () => {
     const services = (servicesData?.data as any)?.services || servicesData?.data || [];
     const { mutate: submitWaitlist, isPending } = useSubmitWaitlist();
 
-    const [formData, setFormData] = useState({ full_name: '', phone: '', desired_service: '' });
+    const [formData, setFormData] = useState({ full_name: '', phone: '', email: '', desired_service: '' });
     const [statusText, setStatusText] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.full_name || !formData.phone) {
-            setStatusText('Please fill in your name and phone number.');
+        if (!formData.full_name || !formData.phone || !formData.email) {
+            setStatusText('Please fill in your name, email, and phone number.');
             return;
         }
 
         submitWaitlist(formData, {
             onSuccess: () => {
                 setStatusText('You have successfully joined the waiting list! Our team will contact you soon.');
-                setFormData({ full_name: '', phone: '', desired_service: '' });
+                setFormData({ full_name: '', phone: '', email: '', desired_service: '' });
                 setTimeout(() => setStatusText(''), 5000);
             },
             onError: () => {
@@ -35,19 +35,19 @@ const BookingSection = () => {
     return (
         <section id="booking" className="py-12 md:py-24 w-full bg-salon-surface relative z-10 overflow-hidden">
             <div className="w-full max-w-[1400px] mx-auto px-8 md:px-16 flex flex-col lg:flex-row gap-8 items-center">
-                
+
                 {/* Left side: Context & Typography */}
                 <div className="w-full lg:w-1/2">
-                    <SectionHeader 
-                        title="Join the" 
-                        italicTitle="Waiting List" 
-                        description="To maintain the highest standards of our craft, Saloon Saleh operates on a priority waiting list for men's grooming."
+                    <SectionHeader
+                        title="Join the"
+                        italicTitle="Waiting List"
+                        description="To maintain the highest standards of our craft, Salon Saleh operates on a priority waiting list for men's grooming."
                         layout="stack"
                         border={false}
                         className="mb-4"
                     />
-                    
-                    <motion.div 
+
+                    <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
@@ -73,31 +73,42 @@ const BookingSection = () => {
                             <div className="flex flex-col md:flex-row gap-4">
                                 <div className="w-full flex flex-col gap-2">
                                     <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Full Name</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         required
                                         value={formData.full_name}
                                         onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20" 
-                                        placeholder="John Doe" 
+                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20"
+                                        placeholder="John Doe"
                                     />
                                 </div>
                                 <div className="w-full flex flex-col gap-2">
                                     <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Phone Number</label>
-                                    <input 
-                                        type="tel" 
+                                    <input
+                                        type="tel"
                                         required
                                         value={formData.phone}
                                         onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20" 
-                                        placeholder="+971 50 000 0000" 
+                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20"
+                                        placeholder="+971 50 000 0000"
+                                    />
+                                </div>
+                                <div className="w-full flex flex-col gap-2">
+                                    <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Email Address</label>
+                                    <input
+                                        type="email"
+                                        required
+                                        value={formData.email}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20"
+                                        placeholder="john@example.com"
                                     />
                                 </div>
                             </div>
-                            
+
                             <div className="w-full flex flex-col gap-2">
                                 <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Desired Service</label>
-                                <select 
+                                <select
                                     value={formData.desired_service}
                                     onChange={(e) => setFormData(prev => ({ ...prev, desired_service: e.target.value }))}
                                     className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden appearance-none rounded-none cursor-pointer transition-colors"
@@ -114,17 +125,17 @@ const BookingSection = () => {
                             <Button as="a" href="/booking" variant="golden" className="mt-2 w-full justify-center text-center">
                                 <span>Start Interactive Booking</span>
                             </Button>
-                            
+
                             <div className="flex items-center gap-4 my-2">
                                 <div className="h-[1px] flex-1 bg-salon-golden/10"></div>
                                 <span className="text-[8px] uppercase tracking-widest text-salon-golden-muted">or quick request</span>
                                 <div className="h-[1px] flex-1 bg-salon-golden/10"></div>
                             </div>
-                            
+
                             <Button variant="ghost" className="w-full justify-center text-[10px] tracking-widest border border-salon-golden/20" type="submit" disabled={isPending}>
                                 <span>{isPending ? 'Joining...' : 'Join Waitlist Only'}</span>
                             </Button>
-                            
+
                             {statusText && (
                                 <p className={`text-center text-[11px] uppercase tracking-[0.1em] mt-2 ${statusText.includes('successfully') ? 'text-green-500' : 'text-red-500'}`}>
                                     {statusText}

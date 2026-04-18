@@ -9,7 +9,7 @@ export const useGetStaff = () => {
     });
 };
 
-export const useGetStaffById = (id: string) => {
+export const useGetStaffMember = (id: string) => {
     return useQuery({
         queryKey: ['staff', id],
         queryFn: () => staffService.getStaffById(id),

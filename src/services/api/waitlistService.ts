@@ -4,6 +4,7 @@ export interface WaitlistEntry {
     id: string;
     full_name: string;
     phone: string;
+    email: string;
     desired_service: string;
     status: 'pending' | 'contacted' | 'booked';
     created_at: string;
@@ -14,7 +15,7 @@ export const waitlistService = {
         return apiClient.get<{ data: { waitlist: WaitlistEntry[] } }>('/waitlist', { params });
     },
 
-    submitWaitlist: async (data: { full_name: string; phone: string; desired_service: string }) => {
+    submitWaitlist: async (data: { full_name: string; phone: string; email: string; desired_service: string }) => {
         return apiClient.post<{ data: { waitlist: WaitlistEntry } }>('/waitlist', data);
     },
 

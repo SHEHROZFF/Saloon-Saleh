@@ -20,7 +20,7 @@ const ServicesSection = () => {
                             loading="lazy"
                             src="http://waitwhile.com/locations/stylish"
                             className="w-full h-full border-none grayscale invert contrast-125"
-                            title="Saloon Saleh Waitlist"
+                            title="Salon Saleh Waitlist"
                         />
                     </div>
                 </DecorativeCard>

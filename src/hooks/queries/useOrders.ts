@@ -38,6 +38,17 @@ export const useUpdateOrderStatus = () => {
     });
 };
 
+export const useUpdateOrder = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: any }) => 
+            orderService.updateOrder(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['orders'] });
+        },
+    });
+};
+
 // Coupons
 export const useValidateCoupon = () => {
     return useMutation({
@@ -69,5 +80,11 @@ export const useDeleteCoupon = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['coupons'] });
         },
+    });
+};
+
+export const useDistributeCoupon = () => {
+    return useMutation({
+        mutationFn: (data: { coupon_id: string; emails: string[] }) => couponService.distributeCoupon(data),
     });
 };

@@ -110,7 +110,7 @@ const AdminSiteSettings = () => {
     const [marqueeItems, setMarqueeItems] = useState<string[]>([]);
     const [footer, setFooter] = useState<FooterData>({
         locations: [], navigation: [], connect: [],
-        copyrightName: 'SALOON SALEH', appStoreUrl: '', playStoreUrl: ''
+        copyrightName: 'SALON SALEH', appStoreUrl: '', playStoreUrl: ''
     });
 
     // Sync from server
@@ -135,7 +135,7 @@ const AdminSiteSettings = () => {
                 locations: migrateLinks(fData.locations),
                 navigation: migrateLinks(fData.navigation),
                 connect: migrateLinks(fData.connect),
-                copyrightName: fData.copyrightName || 'SALOON SALEH',
+                copyrightName: fData.copyrightName || 'SALON SALEH',
                 appStoreUrl: fData.appStoreUrl || '',
                 playStoreUrl: fData.playStoreUrl || '',
             });
@@ -419,7 +419,7 @@ const AdminSiteSettings = () => {
                         <div className="border-t border-salon-golden/10 pt-6 space-y-4">
                             <h3 className="text-sm uppercase tracking-widest text-salon-primary font-bold">General</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl">
-                                <Field label="Copyright Name" value={footer.copyrightName} onChange={v => setFooter(prev => ({ ...prev, copyrightName: v }))} placeholder="SALOON SALEH" />
+                                <Field label="Copyright Name" value={footer.copyrightName} onChange={v => setFooter(prev => ({ ...prev, copyrightName: v }))} placeholder="SALON SALEH" />
                                 <Field label="App Store URL" value={footer.appStoreUrl} onChange={v => setFooter(prev => ({ ...prev, appStoreUrl: v }))} placeholder="https://apps.apple.com/..." />
                                 <Field label="Play Store URL" value={footer.playStoreUrl} onChange={v => setFooter(prev => ({ ...prev, playStoreUrl: v }))} placeholder="https://play.google.com/..." />
                             </div>

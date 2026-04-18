@@ -31,9 +31,14 @@ const AdminWaitlist = () => {
                             <tr><td colSpan={5} className="text-center py-10 text-salon-muted italic">There are no waitlist entries yet.</td></tr>
                         ) : list.map((l: any) => (
                             <tr key={l.id} className="border-b border-salon-golden/5 hover:bg-salon-surface/50 transition-colors group">
-                                <td className="py-4 text-sm font-medium text-salon-primary">{l.full_name}</td>
-                                <td className="py-4 text-sm text-salon-muted flex items-center gap-2">
-                                    <Phone className="w-3 h-3 text-salon-golden" /> {l.phone}
+                                <td className="py-4">
+                                    <div className="text-sm font-medium text-salon-primary">{l.full_name}</div>
+                                    <div className="text-[10px] text-salon-muted lowercase">{l.email}</div>
+                                </td>
+                                <td className="py-4 text-sm text-salon-muted">
+                                    <div className="flex items-center gap-2">
+                                        <Phone className="w-3 h-3 text-salon-golden" /> {l.phone}
+                                    </div>
                                 </td>
                                 <td className="py-4 text-sm text-salon-primary">{l.desired_service}</td>
                                 <td className="py-4 text-sm text-salon-muted">{new Date(l.created_at).toLocaleDateString()}</td>

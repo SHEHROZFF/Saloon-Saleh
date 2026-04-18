@@ -153,10 +153,10 @@ const StepGender = ({ onSelect }: { onSelect: (g: any) => void }) => {
 const StepServices = ({ gender, selected, onToggle, onNext }: { gender: string | null, selected: Service[], onToggle: (s: Service) => void, onNext: () => void }) => {
     const { data: servicesData, isLoading } = useGetServices({ gender: gender === 'Kids' ? undefined : gender || undefined });
     const liveServices = (servicesData?.data as any)?.services || servicesData?.data || [];
-    
+
     // Group categories dynamically
     const categories = [...new Set(liveServices.map((s: any) => s.category_name || 'General'))];
-    
+
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center py-24 space-y-4">
@@ -274,7 +274,7 @@ const StepStaff = ({ onSelect, onSkip }: { onSelect: (s: Staff) => void, onSkip:
 const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, time: any, staffId: string | undefined, onSelect: (d: any, t: any) => void, onNext: () => void }) => {
     const [viewDate, setViewDate] = useState(new Date(date || new Date()));
     const scrollRef = useRef<HTMLDivElement>(null);
-    
+
     // Remote checks
     const { data: slotsData, isLoading: slotsLoading } = useGetTimeSlots();
     const getLocalFormattedDate = (d: Date) => {
@@ -286,9 +286,9 @@ const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, ti
 
     const formattedDate = date || getLocalFormattedDate(new Date());
     const { data: availabilityData, isLoading: availLoading } = useCheckAvailability(formattedDate, staffId);
-    
+
     const timeSlots = (slotsData?.data as any)?.time_slots || slotsData?.data || [];
-    
+
     // Availability data returns objects: { id, slot_time, is_available: boolean }
     const availSlotsArray = (availabilityData?.data as any)?.slots || [];
     const bookedSlotIds = availSlotsArray.filter((s: any) => s.is_available === false).map((s: any) => s.id);
@@ -299,7 +299,7 @@ const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, ti
         const year = viewDate.getFullYear();
         const month = viewDate.getMonth();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        
+
         const d = [];
         for (let i = 1; i <= daysInMonth; i++) {
             const dateObj = new Date(year, month, i);
@@ -339,9 +339,9 @@ const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, ti
 
     const isToday = (d: Date) => {
         const today = new Date();
-        return d.getDate() === today.getDate() && 
-               d.getMonth() === today.getMonth() && 
-               d.getFullYear() === today.getFullYear();
+        return d.getDate() === today.getDate() &&
+            d.getMonth() === today.getMonth() &&
+            d.getFullYear() === today.getFullYear();
     };
 
     return (
@@ -349,8 +349,8 @@ const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, ti
             <div className="flex flex-col gap-6">
                 {/* Refined Month/Year Switcher */}
                 <div className="flex justify-between items-center max-w-xs mx-auto w-full mb-4">
-                    <button 
-                        onClick={() => changeMonth(-1)} 
+                    <button
+                        onClick={() => changeMonth(-1)}
                         className="text-salon-golden-muted hover:text-salon-golden transition-colors p-2"
                         disabled={viewDate.getMonth() === new Date().getMonth() && viewDate.getFullYear() === new Date().getFullYear()}
                     >
@@ -365,7 +365,7 @@ const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, ti
                 </div>
 
                 {/* Premium Horizontal Scroller */}
-                <div 
+                <div
                     ref={scrollRef}
                     className="flex gap-4 overflow-x-auto py-8 no-scrollbar max-w-full px-4 scroll-smooth"
                 >
@@ -380,13 +380,12 @@ const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, ti
                                 id={`date-${d.full}`}
                                 disabled={past}
                                 onClick={() => onSelect(d.full, time)}
-                                className={`flex flex-col items-center justify-center min-w-[90px] h-32 border transition-all duration-500 relative ${
-                                    isSelected 
-                                    ? 'bg-salon-surface border-salon-golden shadow-[0_10px_30px_rgba(212,175,55,0.2),inset_0_0_20px_rgba(212,175,55,0.2)] scale-110 z-10' 
-                                    : past 
-                                        ? 'opacity-20 cursor-not-allowed border-transparent' 
-                                        : 'bg-salon-surface border-salon-golden/10 hover:border-salon-golden/40 hover:scale-105'
-                                }`}
+                                className={`flex flex-col items-center justify-center min-w-[90px] h-32 border transition-all duration-500 relative ${isSelected
+                                        ? 'bg-salon-surface border-salon-golden shadow-[0_10px_30px_rgba(212,175,55,0.2),inset_0_0_20px_rgba(212,175,55,0.2)] scale-110 z-10'
+                                        : past
+                                            ? 'opacity-20 cursor-not-allowed border-transparent'
+                                            : 'bg-salon-surface border-salon-golden/10 hover:border-salon-golden/40 hover:scale-105'
+                                    }`}
                             >
                                 <span className={`text-[10px] uppercase tracking-[0.2em] mb-1 ${isSelected ? 'text-salon-golden' : 'text-salon-golden-muted'}`}>{d.day}</span>
                                 <span className={`text-3xl font-serif ${isSelected ? 'text-salon-golden' : 'text-salon-primary'}`}>{d.num}</span>
@@ -403,7 +402,7 @@ const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, ti
             {/* Time Slots Section */}
             <div className="space-y-8">
                 <h3 className="text-[10px] uppercase tracking-[0.5em] text-center text-salon-golden">Available Time</h3>
-                
+
                 {slotsLoading || availLoading ? (
                     <div className="flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-salon-golden" /></div>
                 ) : (
@@ -411,18 +410,17 @@ const StepDateTime = ({ date, time, staffId, onSelect, onNext }: { date: any, ti
                         {timeSlots.map((t: any) => {
                             const isSelectedTime = time === t.id;
                             const isBooked = bookedSlotIds.includes(t.id);
-                            
+
                             return (
                                 <button
                                     key={t.id}
                                     onClick={() => onSelect(date, t.id)}
                                     disabled={isBooked}
-                                    className={`p-4 border text-center transition-all duration-300 font-serif text-lg ${
-                                        isBooked ? 'opacity-30 cursor-not-allowed bg-salon-surface border-transparent line-through text-salon-muted' : 
-                                        isSelectedTime 
-                                        ? 'bg-salon-surface border-salon-golden shadow-[0_5px_20px_rgba(212,175,55,0.15),inset_0_0_15px_rgba(212,175,55,0.15)] scale-105 z-10 text-salon-golden' 
-                                        : 'bg-salon-surface border-salon-golden/10 hover:border-salon-golden'
-                                    }`}
+                                    className={`p-4 border text-center transition-all duration-300 font-serif text-lg ${isBooked ? 'opacity-30 cursor-not-allowed bg-salon-surface border-transparent line-through text-salon-muted' :
+                                            isSelectedTime
+                                                ? 'bg-salon-surface border-salon-golden shadow-[0_5px_20px_rgba(212,175,55,0.15),inset_0_0_15px_rgba(212,175,55,0.15)] scale-105 z-10 text-salon-golden'
+                                                : 'bg-salon-surface border-salon-golden/10 hover:border-salon-golden'
+                                        }`}
                                 >
                                     {t.display_label}
                                 </button>
@@ -473,71 +471,72 @@ const StepDetails = ({ data, onChange, onNext }: { data: BookingData, onChange: 
     };
 
     return (
-    <div className="space-y-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">First Name</label>
-                <input
-                    type="text"
-                    placeholder="E.g. James"
-                    className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
-                    value={customer.firstName}
-                    onChange={(e) => onChange({ ...customer, firstName: e.target.value })}
-                />
+        <div className="space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">First Name</label>
+                    <input
+                        type="text"
+                        placeholder="E.g. James"
+                        className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
+                        value={customer.firstName}
+                        onChange={(e) => onChange({ ...customer, firstName: e.target.value })}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">Last Name</label>
+                    <input
+                        type="text"
+                        placeholder="E.g. Bond"
+                        className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
+                        value={customer.lastName}
+                        onChange={(e) => onChange({ ...customer, lastName: e.target.value })}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">Email Address</label>
+                    <input
+                        type="email"
+                        placeholder="james@example.com"
+                        className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
+                        value={customer.email}
+                        onChange={(e) => onChange({ ...customer, email: e.target.value })}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">Phone Number</label>
+                    <input
+                        type="tel"
+                        placeholder="+971 -- --- ----"
+                        className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
+                        value={customer.phone}
+                        onChange={(e) => onChange({ ...customer, phone: e.target.value })}
+                    />
+                </div>
             </div>
             <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">Last Name</label>
-                <input
-                    type="text"
-                    placeholder="E.g. Bond"
+                <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">Special Notes</label>
+                <textarea
+                    rows={4}
                     className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
-                    value={customer.lastName}
-                    onChange={(e) => onChange({ ...customer, lastName: e.target.value })}
+                    placeholder="Any specific requests or requirements..."
+                    value={customer.notes}
+                    onChange={(e) => onChange({ ...customer, notes: e.target.value })}
                 />
             </div>
-            <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">Email Address</label>
-                <input
-                    type="email"
-                    placeholder="james@example.com"
-                    className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
-                    value={customer.email}
-                    onChange={(e) => onChange({ ...customer, email: e.target.value })}
-                />
-            </div>
-            <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">Phone Number</label>
-                <input
-                    type="tel"
-                    placeholder="+971 -- --- ----"
-                    className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
-                    value={customer.phone}
-                    onChange={(e) => onChange({ ...customer, phone: e.target.value })}
-                />
+            <div className="flex justify-center">
+                <Button
+                    variant="golden"
+                    className="px-20 py-5"
+                    onClick={handleBookingSubmit}
+                    disabled={!customer.firstName || !customer.email || !customer.phone || isPending}
+                >
+                    {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Confirm Appointment"}
+                </Button>
             </div>
         </div>
-        <div className="space-y-2">
-            <label className="text-[10px] uppercase tracking-widest text-salon-golden-muted px-1">Special Notes</label>
-            <textarea
-                rows={4}
-                className="w-full bg-salon-surface border border-salon-golden/10 px-4 py-4 focus:outline-none focus:border-salon-golden"
-                placeholder="Any specific requests or requirements..."
-                value={customer.notes}
-                onChange={(e) => onChange({ ...customer, notes: e.target.value })}
-            />
-        </div>
-        <div className="flex justify-center">
-            <Button
-                variant="golden"
-                className="px-20 py-5"
-                onClick={handleBookingSubmit}
-                disabled={!customer.firstName || !customer.email || !customer.phone || isPending}
-            >
-                {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Confirm Appointment"}
-            </Button>
-        </div>
-    </div>
-)};
+    )
+};
 
 const StepConfirmation = ({ data, total }: { data: BookingData, total: string }) => (
     <div className="flex flex-col items-center">
@@ -549,7 +548,7 @@ const StepConfirmation = ({ data, total }: { data: BookingData, total: string })
             {/* Elegant Receipt Design with Theme Awareness */}
             <div className="absolute top-0 left-0 w-full h-1 bg-salon-golden" />
             <div className="text-center mb-10">
-                <h3 className="text-2xl font-serif tracking-tighter">SALOON SALEH</h3>
+                <h3 className="text-2xl font-serif tracking-tighter">SALON SALEH</h3>
                 <p className="text-[8px] uppercase tracking-[0.3em] font-medium text-salon-golden italic">Appointment Receipt</p>
             </div>
 
