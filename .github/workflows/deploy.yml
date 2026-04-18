@@ -34,4 +34,4 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         port: 21
         local-dir: ./dist/  # Use ./build/ if you are using Create React App
-        # server-dir: /public_html/
+        server-dir: /domains/salonsaleh.com/public_html/
