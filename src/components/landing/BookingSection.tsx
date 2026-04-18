@@ -70,37 +70,39 @@ const BookingSection = () => {
                 <div className="w-full lg:w-1/2">
                     <DecorativeCard delay={0.2}>
                         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                            <div className="flex flex-col md:flex-row gap-4">
-                                <div className="w-full flex flex-col gap-2">
-                                    <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Full Name</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.full_name}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
-                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20"
-                                        placeholder="John Doe"
-                                    />
+                            <div className="flex flex-col gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Full Name</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={formData.full_name}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, full_name: e.target.value }))}
+                                            className="w-full bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20"
+                                            placeholder="John Doe"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Phone Number</label>
+                                        <input
+                                            type="tel"
+                                            required
+                                            value={formData.phone}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                                            className="w-full bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20"
+                                            placeholder="+971 50 000 0000"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="w-full flex flex-col gap-2">
-                                    <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Phone Number</label>
-                                    <input
-                                        type="tel"
-                                        required
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20"
-                                        placeholder="+971 50 000 0000"
-                                    />
-                                </div>
-                                <div className="w-full flex flex-col gap-2">
+                                <div className="flex flex-col gap-2">
                                     <label className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Email Address</label>
                                     <input
                                         type="email"
                                         required
                                         value={formData.email}
                                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                        className="bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20"
+                                        className="w-full bg-transparent border-b border-salon-primary/10 text-salon-primary text-md pb-2 focus:outline-none focus:border-salon-golden transition-colors rounded-none placeholder:text-salon-primary/20"
                                         placeholder="john@example.com"
                                     />
                                 </div>
