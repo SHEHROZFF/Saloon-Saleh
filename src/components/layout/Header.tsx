@@ -44,6 +44,12 @@ const Header = () => {
         ["blur(0px)", "blur(12px)"]
     );
 
+    const headerTextColor = useTransform(
+        scrollY,
+        [0, 100],
+        ["rgba(255, 255, 255, 0.95)", "var(--salon-primary)"]
+    );
+
     const borderBottom = useTransform(
         scrollY,
         [0, 100],
@@ -59,7 +65,12 @@ const Header = () => {
                 <div className="flex items-center gap-3 cursor-pointer z-50">
                     <img src="/Main_logo_wo_BG.png" alt="Salon Saleh Logo" className="w-8 h-8 object-contain" />
                     <div className="flex flex-col -gap-1">
-                        <span className="text-lg md:text-xl font-serif text-salon-primary tracking-tighter leading-none">SALON SALEH</span>
+                        <motion.span 
+                            style={{ color: headerTextColor }}
+                            className="text-lg md:text-xl font-serif tracking-tighter leading-none"
+                        >
+                            SALON SALEH
+                        </motion.span>
                         <span className="text-[8px] uppercase tracking-[0.3em] text-salon-golden-muted">Haute Coiffure Homme</span>
                     </div>
                 </div>
@@ -109,7 +120,7 @@ const Header = () => {
                     {/* Refined Theme Switcher - High Visibility */}
                     <button
                         onClick={toggleTheme}
-                        className="w-11 h-11 rounded-full border border-salon-golden/40 flex items-center justify-center text-salon-primary hover:bg-salon-golden hover:text-salon-base transition-all duration-300 relative overflow-hidden bg-salon-surface/30 backdrop-blur-sm group/theme"
+                        className="w-11 h-11 rounded-full border border-salon-golden/40 flex items-center justify-center text-salon-golden hover:bg-salon-golden hover:text-salon-base transition-all duration-300 relative overflow-hidden bg-salon-surface/30 backdrop-blur-sm group/theme"
                         aria-label="Toggle theme"
                     >
                         <div className="relative w-5 h-5 md:w-6 md:h-6">

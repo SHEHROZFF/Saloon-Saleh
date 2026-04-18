@@ -115,7 +115,7 @@ h6,
 /* Golden Variation */
 .sleek-btn-golden {
   border-color: var(--salon-golden) !important;
-  color: var(--salon-primary) !important;
+  color: var(--salon-primary);
 }
 
 .sleek-btn-golden::before {

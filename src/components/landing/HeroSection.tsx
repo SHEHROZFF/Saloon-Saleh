@@ -131,7 +131,7 @@ const HeroSection = () => {
                                         as="a"
                                         href={btn.link}
                                         variant={btn.variant}
-                                        className="w-full sm:w-auto min-w-[180px] h-11 md:h-12 tracking-widest text-[10px]"
+                                        className="w-full sm:w-auto min-w-[180px] h-11 md:h-12 tracking-widest text-[10px] !text-white"
                                     >
                                         {btn.label}
                                     </Button>
