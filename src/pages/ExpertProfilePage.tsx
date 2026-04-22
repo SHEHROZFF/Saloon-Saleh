@@ -70,8 +70,22 @@ const ExpertProfilePage = () => {
                                 <Sparkles className="w-4 h-4" />
                                 <span className="text-[10px] uppercase tracking-[0.4em] font-bold">The Artisan</span>
                             </div>
-                            <h1 className="text-5xl md:text-7xl font-serif leading-tight">{staff.name}</h1>
+                            <h1 className="text-4xl md:text-5xl font-serif leading-tight">{staff.name}</h1>
                             <p className="text-xl text-salon-golden-muted font-light italic">{staff.role}</p>
+                            
+                            {/* Services Bar */}
+                            {staff.services && staff.services.length > 0 && (
+                                <div className="flex flex-wrap gap-3 pt-4">
+                                    {staff.services.map((svc: any) => (
+                                        <span
+                                            key={svc.id}
+                                            className="px-4 py-2 border border-salon-golden/20 bg-salon-base text-[10px] uppercase tracking-widest text-salon-golden font-medium rounded-sm shadow-sm"
+                                        >
+                                            {svc.name}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="space-y-6">

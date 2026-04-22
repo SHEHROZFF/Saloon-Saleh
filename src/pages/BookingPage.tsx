@@ -118,14 +118,15 @@ const BookingPage = () => {
 
 const StepGender = ({ onSelect }: { onSelect: (g: any) => void }) => {
     const genders = [
-        { name: 'Women', image: '/step1/women.png' },
+        // { name: 'Women', image: '/step1/women.png' },
         { name: 'Men', image: '/step1/men.png' },
         { name: 'Kids', image: '/step1/kid.png' }
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {genders.map(g => (
+        <div className="flex justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+                {genders.map(g => (
                 <button
                     key={g.name}
                     onClick={() => onSelect(g.name)}
@@ -146,6 +147,7 @@ const StepGender = ({ onSelect }: { onSelect: (g: any) => void }) => {
                     <span className="relative text-[8px] uppercase tracking-[0.4em] text-salon-golden-muted italic group-hover:text-salon-golden opacity-50 group-hover:opacity-100 transition-all">Click to Select</span>
                 </button>
             ))}
+            </div>
         </div>
     );
 };

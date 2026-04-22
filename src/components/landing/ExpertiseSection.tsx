@@ -34,7 +34,7 @@ const ExpertiseSection = () => {
     ];
 
     return (
-        <section id="expertise" className="py-16 md:py-24 w-full bg-salon-base relative z-10 border-t border-salon-surface">
+        <section id="expertise" className="py-16 md:py-24 w-full bg-salon-base relative z-10 border-t border-salon-golden/10">
             <div className="w-full max-w-[1400px] mx-auto px-8 md:px-16">
 
                 <SectionHeader
@@ -47,7 +47,7 @@ const ExpertiseSection = () => {
                     className="mb-8"
                 />
 
-                <div className="flex flex-col gap-0 border-t border-salon-surface relative">
+                <div className="flex flex-col gap-0 border-t border-salon-golden/10 relative">
                     {displayStaff.map((item, idx) => (
                         <motion.a
                             href={`/experts/${item.id}`}
@@ -56,12 +56,12 @@ const ExpertiseSection = () => {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: idx * 0.1 }}
-                            className="group flex items-center justify-between py-6 border-b border-salon-surface hover:bg-salon-surface/50 transition-all duration-500 cursor-pointer px-4 -mx-4 no-underline"
+                            className="flex items-center justify-between py-6 border-b border-salon-golden/10 cursor-pointer px-4 -mx-4 no-underline"
                         >
                             <div className="flex items-center gap-6 md:gap-10 min-w-0">
                                 <span className="text-salon-golden-muted text-[10px] font-light font-serif tracking-widest shrink-0">0{idx + 1}</span>
                                 <div className="min-w-0">
-                                    <h3 className="text-2xl md:text-3xl font-serif text-salon-primary group-hover:translate-x-3 transition-transform duration-700">
+                                    <h3 className="text-2xl md:text-3xl font-serif text-salon-primary">
                                         {item.name}
                                     </h3>
                                     <span className="text-sm text-salon-primary/50 block mt-1">{item.role}</span>
@@ -81,13 +81,13 @@ const ExpertiseSection = () => {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-8 opacity-0 group-hover:opacity-100 transition-all duration-700 -translate-x-5 group-hover:translate-x-0 shrink-0">
-                                <div className="hidden lg:block w-40 h-20 overflow-hidden rounded-sm grayscale group-hover:grayscale-0 transition-all duration-1000 border border-salon-golden/10">
-                                    <img src={item.avatar_url || "https://images.unsplash.com/photo-1599351431202-1e0f0137899a"} alt={item.name} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-[2000ms]" />
+                            <div className="flex items-center gap-8 shrink-0">
+                                <div className="hidden lg:block w-24 h-24 rounded-full overflow-hidden border-2 border-salon-golden/20 shadow-lg">
+                                    <img src={item.avatar_url || "https://images.unsplash.com/photo-1599351431202-1e0f0137899a"} alt={item.name} className="w-full h-full object-cover" />
                                 </div>
-                                <div className="flex items-center gap-2 group/btn">
-                                    <span className="text-[10px] uppercase tracking-widest text-salon-golden translate-x-3 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">Profile</span>
-                                    <svg className="w-5 h-5 text-salon-golden transition-transform duration-500 group-hover:rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] uppercase tracking-widest text-salon-golden">Profile</span>
+                                    <svg className="w-5 h-5 text-salon-golden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                     </svg>
                                 </div>
