@@ -27,6 +27,7 @@ import AdminStaff from '@pages/admin/AdminStaff';
 import AdminCoupons from '@pages/admin/AdminCoupons';
 import AdminWaitlist from '@pages/admin/AdminWaitlist';
 import AdminReports from '@pages/admin/AdminReports';
+import AdminStaffDetail from '@pages/admin/AdminStaffDetail';
 import AdminSiteSettings from '@pages/admin/AdminSiteSettings';
 import AdminBlogs from '@pages/admin/AdminBlogs';
 
@@ -129,6 +130,7 @@ const AppRoutes = () => {
                             <Route path="coupons" element={<AdminCoupons />} />
                             <Route path="waitlist" element={<AdminWaitlist />} />
                             <Route path="reports" element={<AdminReports />} />
+                            <Route path="reports/staff/:id" element={<AdminStaffDetail />} />
                             <Route path="blogs" element={<AdminBlogs />} />
                             <Route path="settings" element={<AdminSiteSettings />} />
                             <Route path="users" element={<div className="p-8 font-serif text-salon-primary">Users Management (Coming Soon)</div>} />

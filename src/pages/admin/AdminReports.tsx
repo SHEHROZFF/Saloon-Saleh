@@ -2,18 +2,17 @@ import { useState } from 'react';
 import { 
     Download, Calendar, DollarSign, 
     Loader2, ArrowLeft, UserCheck, Percent,
-    ShoppingCart, Star, X
+    ShoppingCart, Star, ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGetBusinessReport, useGetStaffReport } from '../../hooks/queries/useReports';
-import type { StaffPerformance } from '../../services/api/reportService';
+
 
 const AdminReports = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<'business' | 'staff'>('business');
     const [timeframe, setTimeframe] = useState('30d');
-    const [selectedStaff, setSelectedStaff] = useState<null | StaffPerformance>(null);
 
     const { data: bizData, isLoading: isBizLoading } = useGetBusinessReport(timeframe);
     const { data: staffData, isLoading: isStaffLoading } = useGetStaffReport(timeframe);
@@ -252,265 +251,59 @@ const AdminReports = () => {
                                         <button
                                             key={idx}
                                             type="button"
-                                            onClick={() => setSelectedStaff(s)}
-                                            className={`bg-salon-surface/40 border rounded-lg p-8 transition-all relative overflow-hidden text-left ${selectedStaff?.name === s.name ? 'border-salon-golden/40 shadow-[0_0_30px_rgba(212,175,55,0.15)]' : 'border-salon-golden/10 hover:border-salon-golden/30'}`}
+                                            onClick={() => navigate(`/admin/reports/staff/${s.id}`)}
+                                            className="group relative bg-salon-surface/40 border border-salon-golden/10 rounded-xl p-8 transition-all hover:border-salon-golden/30 hover:shadow-xl hover:shadow-salon-golden/5 text-left overflow-hidden"
                                         >
-                                            <div className="absolute -right-4 -top-4 w-16 h-16 bg-salon-golden/5 flex items-center justify-center rotate-45 text-salon-golden text-xl font-serif transition-all">
-                                                <span className="-rotate-45 ml-2 mt-2">#{idx + 1}</span>
+                                            <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                                <ChevronRight className="w-5 h-5 text-salon-golden" />
                                             </div>
 
                                             <div className="flex items-center gap-4 mb-8">
-                                                <div className="w-16 h-16 rounded-full bg-salon-golden/10 border border-salon-golden/20 flex items-center justify-center">
-                                                    <UserCheck className="w-8 h-8 text-salon-golden" />
+                                                <div className="w-16 h-16 rounded-full bg-salon-golden/10 border border-salon-golden/20 flex items-center justify-center transition-transform group-hover:scale-110 duration-500">
+                                                    {s.avatar_url ? (
+                                                        <img src={s.avatar_url} alt={s.name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <UserCheck className="w-8 h-8 text-salon-golden" />
+                                                    )}
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-lg font-serif text-salon-primary">{s.name}</h4>
-                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-salon-muted">{s.role}</p>
+                                                    <h4 className="text-xl font-serif text-salon-primary group-hover:text-salon-golden transition-colors">{s.name}</h4>
+                                                    <p className="text-[10px] uppercase tracking-[0.2em] text-salon-muted font-bold">{s.role}</p>
                                                 </div>
                                             </div>
 
                                             <div className="space-y-6">
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-[10px] uppercase tracking-widest text-salon-muted">Revenue Generated</span>
-                                                    <span className="text-xl font-serif text-salon-golden">${Number(s.revenue || 0).toLocaleString()}</span>
+                                                    <span className="text-[10px] uppercase tracking-widest text-salon-muted font-bold">Revenue Generated</span>
+                                                    <span className="text-2xl font-serif text-salon-golden">${Number(s.revenue || 0).toLocaleString()}</span>
                                                 </div>
 
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    <div className="bg-salon-base/40 p-3 rounded border border-salon-golden/5">
-                                                        <div className="text-[9px] uppercase tracking-widest text-salon-muted mb-1">Rituals Confirmed</div>
-                                                        <div className="text-lg font-serif text-salon-primary">{s.total_bookings}</div>
+                                                    <div className="bg-salon-base/40 p-4 rounded-lg border border-salon-golden/5">
+                                                        <div className="text-[9px] uppercase tracking-widest text-salon-muted mb-1 font-bold">Rituals</div>
+                                                        <div className="text-xl font-serif text-salon-primary">{s.total_bookings}</div>
                                                     </div>
-                                                    <div className="bg-salon-base/40 p-3 rounded border border-salon-golden/5">
-                                                        <div className="text-[9px] uppercase tracking-widest text-salon-muted mb-1">Cancellations</div>
-                                                        <div className="text-lg font-serif text-salon-primary">{s.cancellations}</div>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <div className="flex justify-between text-[9px] uppercase tracking-widest mb-1">
-                                                        <span className="text-salon-muted">Retention Score</span>
-                                                        <span className="text-salon-golden">
+                                                    <div className="bg-salon-base/40 p-4 rounded-lg border border-salon-golden/5">
+                                                        <div className="text-[9px] uppercase tracking-widest text-salon-muted mb-1 font-bold">Retention</div>
+                                                        <div className="text-xl font-serif text-salon-primary">
                                                             {s.total_bookings > 0
                                                                 ? (100 - (s.cancellations / (Number(s.total_bookings) + Number(s.cancellations)) * 100)).toFixed(0)
                                                                 : 100}%
-                                                        </span>
-                                                    </div>
-                                                    <div className="w-full h-1 bg-salon-base rounded-full overflow-hidden">
-                                                        <div
-                                                            className="h-full bg-salon-golden"
-                                                            style={{ width: `${s.total_bookings > 0 ? (100 - (s.cancellations / (Number(s.total_bookings) + Number(s.cancellations)) * 100)) : 100}%` }}
-                                                        />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </button>
                                     ))}
                                 </div>
-
-                                {selectedStaff ? (
-                                    <div className="bg-salon-surface/40 border border-salon-golden/10 rounded-lg p-8 mt-8">
-                                        <div className="flex flex-col lg:flex-row justify-between gap-6 items-start">
-                                            <div>
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-golden font-bold mb-2">Staff Detail</p>
-                                                <h3 className="text-2xl font-serif text-salon-primary mb-1">{selectedStaff.name}</h3>
-                                                <p className="text-sm text-salon-muted uppercase tracking-[0.2em]">{selectedStaff.role}</p>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => setSelectedStaff(null)}
-                                                className="text-xs uppercase tracking-[0.3em] text-salon-golden font-bold border border-salon-golden/20 rounded px-4 py-2 hover:bg-salon-golden/10 transition-colors"
-                                            >
-                                                Clear Selection
-                                            </button>
-                                        </div>
-
-                                        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                            <div className="bg-salon-base/40 rounded-lg p-5 border border-salon-golden/10">
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-2">Total Bookings</p>
-                                                <p className="text-3xl font-serif text-salon-primary">{selectedStaff.total_bookings}</p>
-                                            </div>
-                                            <div className="bg-salon-base/40 rounded-lg p-5 border border-salon-golden/10">
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-2">Revenue</p>
-                                                <p className="text-3xl font-serif text-salon-golden">${Number(selectedStaff.revenue || 0).toLocaleString()}</p>
-                                            </div>
-                                            <div className="bg-salon-base/40 rounded-lg p-5 border border-salon-golden/10">
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-2">Cancellations</p>
-                                                <p className="text-3xl font-serif text-salon-primary">{selectedStaff.cancellations}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-8">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-2">Booking Performance</p>
-                                            <div className="w-full h-3 bg-salon-base rounded-full overflow-hidden border border-salon-golden/10">
-                                                <div
-                                                    className="h-full bg-salon-golden"
-                                                    style={{ width: `${selectedStaff.total_bookings > 0 ? (100 - (selectedStaff.cancellations / (Number(selectedStaff.total_bookings) + Number(selectedStaff.cancellations)) * 100)) : 100}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : null}
                             </>
-                        )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {selectedStaff && activeTab === 'staff' && (
-                <div
-                    className="fixed inset-0 z-50 grid place-items-center  px-4 py-6"
-                    onClick={() => setSelectedStaff(null)}
-                >
-                    <div
-                        className="w-full max-w-5xl max-h-[calc(100vh-3rem)] overflow-y-auto rounded-[1.5rem] border border-salon-golden/20 bg-salon-surface p-6 shadow-2xl text-salon-primary"
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                            <div>
-                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-golden font-bold mb-2">Staff Detail</p>
-                                <h3 className="text-3xl leading-tight font-serif text-salon-primary">{selectedStaff.name}</h3>
-                                <p className="text-sm text-salon-muted uppercase tracking-[0.2em]">{selectedStaff.role}</p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => setSelectedStaff(null)}
-                                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-salon-golden/20 bg-salon-surface text-salon-golden transition hover:bg-salon-golden/10"
-                            >
-                                <X className="h-4 w-4" />
-                            </button>
-                        </div>
-
-                        <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-                            <div className="space-y-6">
-                                <div className="flex flex-col gap-5 rounded-3xl border border-salon-golden/10 bg-salon-surface p-6">
-                                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                                            <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-salon-golden/20 bg-salon-golden/10">
-                                                {selectedStaff.avatar_url ? (
-                                                    <img
-                                                        src={selectedStaff.avatar_url}
-                                                        alt={selectedStaff.name}
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <UserCheck className="h-10 w-10 text-salon-golden" />
-                                                )}
-                                            </div>
-                                            <div>
-                                                <p className="text-[11px] uppercase tracking-[0.3em] text-salon-muted">Status</p>
-                                                <p className="text-sm font-semibold text-salon-primary">
-                                                    {selectedStaff.is_active ? 'Active' : 'Inactive'}{selectedStaff.is_deleted ? ' • Deleted' : ''}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                                            <div className="rounded-2xl bg-salon-surface/80 p-4 text-center border border-salon-golden/10 min-h-[92px] flex flex-col justify-center whitespace-normal">
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted leading-tight">Bookings</p>
-                                                <p className="text-2xl font-serif text-salon-primary break-words">{selectedStaff.total_bookings}</p>
-                                            </div>
-                                            <div className="rounded-2xl bg-salon-surface/80 p-4 text-center border border-salon-golden/10 min-h-[92px] flex flex-col justify-center whitespace-normal">
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted leading-tight">Revenue</p>
-                                                <p className="text-2xl font-serif text-salon-golden break-words">${Number(selectedStaff.revenue || 0).toLocaleString()}</p>
-                                            </div>
-                                            <div className="rounded-2xl bg-salon-surface/80 p-4 text-center border border-salon-golden/10 min-h-[92px] flex flex-col justify-center whitespace-normal">
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted leading-tight">Cancellations</p>
-                                                <p className="text-2xl font-serif text-salon-primary break-words">{selectedStaff.cancellations}</p>
-                                            </div>
-                                            <div className="rounded-2xl bg-salon-surface/80 p-4 text-center border border-salon-golden/10 min-h-[92px] flex flex-col justify-center whitespace-normal">
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted leading-tight">Retention</p>
-                                                <p className="text-2xl font-serif text-salon-golden break-words">
-                                                    {selectedStaff.total_bookings > 0
-                                                        ? `${(100 - (selectedStaff.cancellations / (Number(selectedStaff.total_bookings) + Number(selectedStaff.cancellations)) * 100)).toFixed(0)}%`
-                                                        : '100%'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid gap-4 sm:grid-cols-2">
-                                        <div className="rounded-3xl bg-salon-base/40 p-5 border border-salon-golden/10">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-2">Email</p>
-                                            <p className="text-sm text-salon-primary">{selectedStaff.email || 'Not provided'}</p>
-                                        </div>
-                                        <div className="rounded-3xl bg-salon-base/40 p-5 border border-salon-golden/10">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-2">Phone</p>
-                                            <p className="text-sm text-salon-primary">{selectedStaff.phone || 'Not provided'}</p>
-                                        </div>
-                                        <div className="rounded-3xl bg-salon-base/40 p-5 border border-salon-golden/10">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-2">Staff ID</p>
-                                            <p className="text-sm text-salon-primary break-all">{selectedStaff.id}</p>
-                                        </div>
-                                        <div className="rounded-3xl bg-salon-base/40 p-5 border border-salon-golden/10">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-2">User ID</p>
-                                            <p className="text-sm text-salon-primary break-all">{selectedStaff.user_id || 'None'}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-6">
-                                <div className="rounded-3xl bg-salon-base/40 p-6 border border-salon-golden/10">
-                                    <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-4">Database Fields</p>
-                                    <div className="grid gap-4 text-sm text-salon-primary sm:grid-cols-2">
-                                        <div className="space-y-1 rounded-2xl bg-salon-surface/80 p-4 border border-salon-golden/10">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted">Active</p>
-                                            <p>{selectedStaff.is_active ? 'Yes' : 'No'}</p>
-                                        </div>
-                                        <div className="space-y-1 rounded-2xl bg-salon-surface/80 p-4 border border-salon-golden/10">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted">Deleted</p>
-                                            <p>{selectedStaff.is_deleted ? 'Yes' : 'No'}</p>
-                                        </div>
-                                        <div className="space-y-1 rounded-2xl bg-salon-surface/80 p-4 border border-salon-golden/10">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted">Sort Order</p>
-                                            <p>{selectedStaff.sort_order}</p>
-                                        </div>
-                                        <div className="space-y-1 rounded-2xl bg-salon-surface/80 p-4 border border-salon-golden/10">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted">Joined</p>
-                                            <p>{new Date(selectedStaff.created_at).toLocaleDateString()}</p>
-                                        </div>
-                                        <div className="space-y-1 rounded-2xl bg-salon-surface/80 p-4 border border-salon-golden/10 sm:col-span-2">
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted">Last Updated</p>
-                                            <p>{new Date(selectedStaff.updated_at).toLocaleString()}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="rounded-3xl bg-salon-base/40 p-6 border border-salon-golden/10">
-                                    <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-4">Detailed Performance</p>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted mb-2">Booking Performance</p>
-                                            <div className="w-full h-3 rounded-full bg-salon-base overflow-hidden border border-salon-golden/10">
-                                                <div
-                                                    className="h-full bg-salon-golden"
-                                                    style={{ width: `${selectedStaff.total_bookings > 0 ? (100 - (selectedStaff.cancellations / (Number(selectedStaff.total_bookings) + Number(selectedStaff.cancellations)) * 100)) : 100}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="grid gap-4 sm:grid-cols-2">
-                                            <div className="rounded-2xl bg-salon-surface/80 p-4 border border-salon-golden/10">
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted">Average Revenue / Booking</p>
-                                                <p className="text-sm text-salon-primary">
-                                                    ${selectedStaff.total_bookings > 0 ? (Number(selectedStaff.revenue || 0) / selectedStaff.total_bookings).toFixed(2) : '0.00'}
-                                                </p>
-                                            </div>
-                                            <div className="rounded-2xl bg-salon-surface/80 p-4 border border-salon-golden/10">
-                                                <p className="text-[10px] uppercase tracking-[0.3em] text-salon-muted">Cancellation Rate</p>
-                                                <p className="text-sm text-salon-primary">
-                                                    {selectedStaff.total_bookings > 0
-                                                        ? `${((selectedStaff.cancellations / Number(selectedStaff.total_bookings)) * 100).toFixed(1)}%`
-                                                        : '0%'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
+                        )
+                    }
+                        </motion.div>
+                    )
+                }
+                </AnimatePresence>
+            </div>
     );
 };
 

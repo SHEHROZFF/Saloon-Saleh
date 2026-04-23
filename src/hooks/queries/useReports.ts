@@ -14,3 +14,11 @@ export const useGetStaffReport = (timeframe: string) => {
         queryFn: () => reportService.getStaffReport(timeframe),
     });
 };
+
+export const useGetStaffDetailReport = (id: string | null, timeframe: string) => {
+    return useQuery({
+        queryKey: ['reports', 'staff', id, timeframe],
+        queryFn: () => reportService.getStaffDetailReport(id!, timeframe),
+        enabled: !!id,
+    });
+};

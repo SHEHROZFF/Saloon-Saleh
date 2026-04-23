@@ -38,6 +38,28 @@ export interface StaffPerformance {
     cancellations: number;
 }
 
+export interface StaffDetailReport {
+    summary: StaffPerformance & {
+        no_shows: number;
+        avg_booking_value: number;
+    };
+    bookings: {
+        id: string;
+        first_name: string;
+        last_name: string;
+        booking_date: string;
+        total_price: number;
+        status: string;
+        time_label: string;
+        services: string;
+    }[];
+    services: {
+        name: string;
+        count: number;
+        revenue: number;
+    }[];
+}
+
 export const reportService = {
     getBusinessReport: async (timeframe: string = '30d') => {
         return apiClient.get<{ data: BusinessReport }>(`/reports/business`, { params: { timeframe } });
@@ -45,5 +67,9 @@ export const reportService = {
 
     getStaffReport: async (timeframe: string = '30d') => {
         return apiClient.get<{ data: { staff: StaffPerformance[] } }>(`/reports/staff`, { params: { timeframe } });
+    },
+
+    getStaffDetailReport: async (id: string, timeframe: string = '30d') => {
+        return apiClient.get<{ data: StaffDetailReport }>(`/reports/staff/${id}`, { params: { timeframe } });
     }
 };
