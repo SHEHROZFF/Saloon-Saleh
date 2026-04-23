@@ -1,14 +1,32 @@
 import { useState } from 'react';
-import { useGetProducts, useDeleteProduct } from '../../hooks/queries/useProducts';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { useGetProducts, useDeleteProduct, useGetProductCategories } from '../../hooks/queries/useProducts';
+import { Plus, Edit, Trash2, Search, Filter } from 'lucide-react';
+import { useDebounce } from '../../hooks/useDebounce';
 import AdminSlideOver from '../../components/admin/AdminSlideOver';
 import ProductForm from '../../components/admin/forms/ProductForm';
 import { Product } from '../../services/api/productService';
 
 const AdminProducts = () => {
-    const { data, isLoading } = useGetProducts();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('');
+    
+    const debouncedSearch = useDebounce(searchTerm, 500);
+
+    const { data, isLoading } = useGetProducts({ 
+        search: debouncedSearch,
+        category_id: categoryFilter,
+        include_inactive: true
+    });
+    const { data: categoriesData } = useGetProductCategories();
+    const categories = categoriesData?.data || [];
+    
     const { mutate: deleteProduct } = useDeleteProduct();
     const products = (data?.data as any)?.products || data?.data || [];
+
+    const resetFilters = () => {
+        setSearchTerm('');
+        setCategoryFilter('');
+    };
 
     const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -38,6 +56,39 @@ const AdminProducts = () => {
                 >
                     <Plus className="w-4 h-4" /> Add Product
                 </button>
+            </div>
+
+            {/* Filters / Search */}
+            <div className="bg-salon-surface/50 border border-salon-golden/10 p-4 rounded-lg flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-salon-muted" />
+                    <input 
+                        type="text" 
+                        placeholder="Search products by name or brand..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-salon-base border border-salon-golden/20 rounded pl-10 pr-4 py-2.5 text-sm text-salon-primary placeholder-salon-muted focus:outline-none focus:border-salon-golden transition-colors"
+                    />
+                </div>
+                <div className="flex gap-2">
+                    <select 
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="bg-salon-base border border-salon-golden/20 rounded px-4 py-2.5 text-sm text-salon-primary focus:outline-none focus:border-salon-golden appearance-none cursor-pointer min-w-[150px]"
+                    >
+                        <option value="">All Categories</option>
+                        {categories.map((cat: any) => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                    </select>
+                    <button 
+                        onClick={resetFilters}
+                        className="px-4 py-2.5 bg-salon-base border border-salon-golden/20 rounded text-salon-primary hover:border-salon-golden transition-colors flex items-center gap-2 hover:bg-salon-golden/5"
+                    >
+                        <Filter className="w-4 h-4" />
+                        <span className="text-xs uppercase tracking-widest font-medium hidden sm:inline">Reset</span>
+                    </button>
+                </div>
             </div>
             
             <div className="bg-salon-surface/30 border border-salon-golden/10 rounded-lg p-6">

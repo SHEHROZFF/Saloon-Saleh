@@ -27,8 +27,8 @@ export interface Staff {
 }
 
 export const staffService = {
-    getStaff: async () => {
-        return apiClient.get<{ data: Staff[] }>('/staff');
+    getStaff: async (params?: { search?: string; all?: boolean }) => {
+        return apiClient.get<{ data: { staff: Staff[] } }>('/staff', { params });
     },
 
     getStaffById: async (id: string) => {

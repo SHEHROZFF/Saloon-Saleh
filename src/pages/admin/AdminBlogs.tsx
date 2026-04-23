@@ -1,14 +1,25 @@
 import { useState } from 'react';
-import { Plus, Edit, Trash2, Eye, Calendar, User } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Calendar, User, Search, Filter } from 'lucide-react';
 import { useGetBlogs, useDeleteBlog } from '../../hooks/queries/useBlogs';
+import { useDebounce } from '../../hooks/useDebounce';
 import AdminSlideOver from '../../components/admin/AdminSlideOver';
-import BlogForm from '@components/admin/forms/BlogForm'; // I'll create this or reuse logic
+import BlogForm from '@components/admin/forms/BlogForm';
 import { BlogPost } from '../../services/api/blogService';
 
 const AdminBlogs = () => {
-    const { data, isLoading } = useGetBlogs();
+    const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearch = useDebounce(searchTerm, 500);
+
+    const { data, isLoading } = useGetBlogs({ 
+        search: debouncedSearch,
+        all: true // Admin sees drafts too
+    });
     const { mutate: deleteBlog } = useDeleteBlog();
     const blogs = (data?.data as any)?.blogs || data?.data || [];
+
+    const resetFilters = () => {
+        setSearchTerm('');
+    };
 
     const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
     const [editingBlog, setEditingBlog] = useState<BlogPost | null>(null);
@@ -46,6 +57,27 @@ const AdminBlogs = () => {
                     className="px-6 py-2.5 bg-salon-golden text-black text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-salon-golden-muted transition-colors rounded shadow-lg"
                 >
                     <Plus className="w-4 h-4" /> Create Article
+                </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="bg-salon-surface/50 border border-salon-golden/10 p-4 rounded-lg">
+                <div className="relative max-w-md">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-salon-muted" />
+                    <input 
+                        type="text" 
+                        placeholder="Search articles by title or author..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-salon-base border border-salon-golden/20 rounded pl-10 pr-4 py-2.5 text-sm text-salon-primary placeholder-salon-muted focus:outline-none focus:border-salon-golden transition-colors"
+                    />
+                </div>
+                <button 
+                    onClick={resetFilters}
+                    className="px-4 py-2.5 bg-salon-base border border-salon-golden/20 rounded text-salon-primary hover:border-salon-golden transition-colors flex items-center gap-2 hover:bg-salon-golden/5"
+                >
+                    <Filter className="w-4 h-4" />
+                    <span className="text-xs uppercase tracking-widest font-medium hidden sm:inline">Reset</span>
                 </button>
             </div>
             

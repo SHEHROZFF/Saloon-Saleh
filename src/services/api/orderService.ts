@@ -34,7 +34,7 @@ export const orderService = {
     },
 
     // Admin endpoints
-    getAllOrders: async (params?: { order_status?: string; payment_status?: string; page?: number; limit?: number }) => {
+    getAllOrders: async (params?: { order_status?: string; payment_status?: string; search?: string; page?: number; limit?: number }) => {
         return apiClient.get<any>('/orders', { params });
     },
 

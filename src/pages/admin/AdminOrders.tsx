@@ -1,14 +1,29 @@
 import { useState } from 'react';
-import { Search, Edit } from 'lucide-react';
+import { Search, Edit, Filter } from 'lucide-react';
 import { useGetAllOrders } from '../../hooks/queries/useOrders';
+import { useDebounce } from '../../hooks/useDebounce';
 import AdminSlideOver from '../../components/admin/AdminSlideOver';
 import OrderEditForm from '../../components/admin/forms/OrderEditForm';
 
 const AdminOrders = () => {
-    const [search, setSearch] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
-    const { data, isLoading } = useGetAllOrders({ order_status: statusFilter });
+    const [paymentFilter, setPaymentFilter] = useState('');
+    
+    const debouncedSearch = useDebounce(searchTerm, 500);
+
+    const { data, isLoading } = useGetAllOrders({ 
+        order_status: statusFilter, 
+        payment_status: paymentFilter,
+        search: debouncedSearch 
+    });
     const orders = data?.data?.orders || [];
+
+    const resetFilters = () => {
+        setSearchTerm('');
+        setStatusFilter('');
+        setPaymentFilter('');
+    };
 
     const [isSlideOverOpen, setIsSlideOverOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
@@ -32,9 +47,9 @@ const AdminOrders = () => {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-salon-muted" />
                     <input 
                         type="text" 
-                        placeholder="Search orders..." 
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search by order #, customer name or email..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full bg-salon-base border border-salon-golden/20 rounded pl-10 pr-4 py-2.5 text-sm text-salon-primary placeholder-salon-muted focus:outline-none focus:border-salon-golden transition-colors"
                     />
                 </div>
@@ -51,6 +66,24 @@ const AdminOrders = () => {
                         <option value="delivered">Delivered</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
+                    <select 
+                        value={paymentFilter}
+                        onChange={(e) => setPaymentFilter(e.target.value)}
+                        className="bg-salon-base border border-salon-golden/20 rounded px-4 py-2.5 text-sm text-salon-primary focus:outline-none focus:border-salon-golden appearance-none cursor-pointer"
+                    >
+                        <option value="">All Payments</option>
+                        <option value="pending">Pending</option>
+                        <option value="paid">Paid</option>
+                        <option value="failed">Failed</option>
+                        <option value="refunded">Refunded</option>
+                    </select>
+                    <button 
+                        onClick={resetFilters}
+                        className="px-4 py-2.5 bg-salon-base border border-salon-golden/20 rounded text-salon-primary hover:border-salon-golden transition-colors flex items-center gap-2 hover:bg-salon-golden/5"
+                    >
+                        <Filter className="w-4 h-4" />
+                        <span className="text-xs uppercase tracking-widest font-medium hidden sm:inline">Reset</span>
+                    </button>
                 </div>
             </div>
 

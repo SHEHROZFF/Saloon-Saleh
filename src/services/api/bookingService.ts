@@ -53,7 +53,7 @@ export const bookingService = {
     },
 
     // Admin / Staff endpoints
-    getAllBookings: async (params?: { status?: string; date?: string; staff_id?: string; page?: number; limit?: number }) => {
+    getAllBookings: async (params?: { status?: string; date?: string; staff_id?: string; search?: string; page?: number; limit?: number }) => {
         return apiClient.get<{ data: { bookings: Booking[] }, pagination: any }>('/bookings', { params });
     },
 

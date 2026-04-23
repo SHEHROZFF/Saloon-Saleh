@@ -17,7 +17,7 @@ export const useCheckAvailability = (date: string, staff_id?: string) => {
     });
 };
 
-export const useGetAllBookings = (params?: { status?: string; date?: string; staff_id?: string; page?: number; limit?: number }) => {
+export const useGetAllBookings = (params?: { status?: string; date?: string; staff_id?: string; search?: string; page?: number; limit?: number }) => {
     return useQuery({
         queryKey: ['bookings', 'all', params],
         queryFn: () => bookingService.getAllBookings(params),

@@ -35,7 +35,7 @@ export interface PaginatedResponse {
 }
 
 export const productService = {
-    getProducts: async (params?: { category_id?: string; search?: string; sort?: string; page?: number; limit?: number; featured?: boolean }) => {
+    getProducts: async (params?: { category_id?: string; search?: string; sort?: string; page?: number; limit?: number; featured?: boolean; include_inactive?: boolean }) => {
         return apiClient.get<PaginatedResponse>('/products', { params });
     },
     

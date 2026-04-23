@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { blogService, BlogPost } from '../../services/api/blogService';
 
-export const useGetBlogs = () => {
+export const useGetBlogs = (params?: { search?: string; all?: boolean }) => {
     return useQuery({
-        queryKey: ['blogs'],
-        queryFn: () => blogService.getAllBlogs(),
+        queryKey: ['blogs', params],
+        queryFn: () => blogService.getAllBlogs(params),
     });
 };
 

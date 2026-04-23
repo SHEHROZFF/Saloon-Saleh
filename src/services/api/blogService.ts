@@ -19,8 +19,8 @@ export interface BlogPost {
 }
 
 export const blogService = {
-    getAllBlogs: async () => {
-        return apiClient.get<{ data: { blogs: BlogPost[] } }>('/blogs');
+    getAllBlogs: async (params?: { search?: string; all?: boolean }) => {
+        return apiClient.get<{ data: { blogs: BlogPost[] } }>('/blogs', { params });
     },
 
     getBlogBySlug: async (slug: string) => {

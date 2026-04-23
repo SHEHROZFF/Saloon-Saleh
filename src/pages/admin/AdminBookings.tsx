@@ -1,14 +1,37 @@
 import { useState } from 'react';
 import { Search, Filter, Eye, Trash2, Edit2, Ban } from 'lucide-react';
+import { useDebounce } from '../../hooks/useDebounce';
 import { useGetAllBookings, useDeleteBooking, useUpdateBookingStatus } from '../../hooks/queries/useBookings';
+import { useGetStaff } from '../../hooks/queries/useStaff';
 import AdminSlideOver from '../../components/admin/AdminSlideOver';
 import ManualBookingForm from '../../components/admin/forms/ManualBookingForm';
 import BookingDetails from '../../components/admin/BookingDetails';
 import { Booking } from '../../services/api/bookingService';
 
 const AdminBookings = () => {
-    const [search, setSearch] = useState('');
-    const { data, isLoading } = useGetAllBookings();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [dateFilter, setDateFilter] = useState('');
+    const [staffFilter, setStaffFilter] = useState('');
+    
+    const debouncedSearch = useDebounce(searchTerm, 500);
+
+    const { data, isLoading } = useGetAllBookings({ 
+        search: debouncedSearch, 
+        status: statusFilter,
+        date: dateFilter,
+        staff_id: staffFilter
+    });
+    
+    const { data: staffData } = useGetStaff();
+    const staffList = (staffData?.data as any)?.staff || [];
+
+    const resetFilters = () => {
+        setSearchTerm('');
+        setStatusFilter('');
+        setDateFilter('');
+        setStaffFilter('');
+    };
     const { mutate: deleteBooking } = useDeleteBooking();
     const { mutate: updateStatus } = useUpdateBookingStatus();
     const bookings = (data?.data as any)?.bookings || data?.data || [];
@@ -59,22 +82,45 @@ const AdminBookings = () => {
                     <input 
                         type="text" 
                         placeholder="Search by client name, ID, or phone..." 
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full bg-salon-base border border-salon-golden/20 rounded pl-10 pr-4 py-2.5 text-sm text-salon-primary placeholder-salon-muted focus:outline-none focus:border-salon-golden transition-colors"
                     />
                 </div>
                 <div className="flex gap-2">
-                    <select className="bg-salon-base border border-salon-golden/20 rounded px-4 py-2.5 text-sm text-salon-primary focus:outline-none focus:border-salon-golden appearance-none cursor-pointer">
+                    <select 
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="bg-salon-base border border-salon-golden/20 rounded px-4 py-2.5 text-sm text-salon-primary focus:outline-none focus:border-salon-golden appearance-none cursor-pointer"
+                    >
                         <option value="">All Statuses</option>
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
-                    <button className="px-4 py-2.5 bg-salon-base border border-salon-golden/20 rounded text-salon-primary hover:border-salon-golden transition-colors flex items-center gap-2">
+                    <select 
+                        value={staffFilter}
+                        onChange={(e) => setStaffFilter(e.target.value)}
+                        className="bg-salon-base border border-salon-golden/20 rounded px-4 py-2.5 text-sm text-salon-primary focus:outline-none focus:border-salon-golden appearance-none cursor-pointer min-w-[140px]"
+                    >
+                        <option value="">All Experts</option>
+                        {staffList.map((s: any) => (
+                            <option key={s.id} value={s.id}>{s.name}</option>
+                        ))}
+                    </select>
+                    <input 
+                        type="date"
+                        value={dateFilter}
+                        onChange={(e) => setDateFilter(e.target.value)}
+                        className="bg-salon-base border border-salon-golden/20 rounded px-4 py-2.5 text-sm text-salon-primary focus:outline-none focus:border-salon-golden cursor-pointer"
+                    />
+                    <button 
+                        onClick={resetFilters}
+                        className="px-4 py-2.5 bg-salon-base border border-salon-golden/20 rounded text-salon-primary hover:border-salon-golden transition-colors flex items-center gap-2 hover:bg-salon-golden/5"
+                    >
                         <Filter className="w-4 h-4" />
-                        <span className="text-xs uppercase tracking-widest font-medium hidden sm:inline">Filters</span>
+                        <span className="text-xs uppercase tracking-widest font-medium hidden sm:inline">Reset</span>
                     </button>
                 </div>
             </div>
