@@ -12,7 +12,7 @@ const ProductsCarousel = () => {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     // Fetch only featured products
-    const { data: productsData } = useGetProducts({ featured: true });
+    const { data: productsData, isLoading } = useGetProducts({ featured: true });
     const displayProducts = (productsData?.data as any)?.products || productsData?.data || [];
 
     // Re-calculate drag width on window resize
@@ -26,6 +26,14 @@ const ProductsCarousel = () => {
         window.addEventListener('resize', updateWidth);
         return () => window.removeEventListener('resize', updateWidth);
     }, [displayProducts]);
+
+    if (isLoading) {
+        return <div className="w-full h-[300px] bg-salon-base flex items-center justify-center text-salon-golden-muted">Loading featured rituals...</div>;
+    }
+
+    if (!displayProducts || displayProducts.length === 0) {
+        return null;
+    }
 
     const openPopup = (product: Product, e: React.MouseEvent) => {
         e.stopPropagation(); // prevent drag trigger

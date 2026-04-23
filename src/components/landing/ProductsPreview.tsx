@@ -3,21 +3,26 @@ import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import SectionHeader from '../ui/SectionHeader';
 import ProductPopup from '../shop/ProductPopup';
-import { shopProducts, Product } from '../../services/mockData';
+import { useGetProducts, useGetProductCategories } from '../../hooks/queries/useProducts';
+import { Product } from '../../services/api/productService';
 
-const categories = [
-    { name: "Bonacure", count: "3 Products" },
-    { name: "Eau de Toilette", count: "1 Product" },
-    { name: "Hair & Beard", count: "41 Products" },
-    { name: "Scalp Clinix", count: "2 Products" },
-    { name: "Skincare", count: "17 Products" },
-];
 
 const ProductsPreview = () => {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-    // Using first 4 products from mockData for consistency
-    const displayProducts = shopProducts.slice(0, 4);
+    const { data: productsData, isLoading: isLoadingProducts } = useGetProducts({ limit: 4, featured: true });
+    const displayProducts: Product[] = ((productsData?.data as any)?.products || productsData?.data || []).slice(0, 4);
+
+    const { data: categoriesData, isLoading: isLoadingCats } = useGetProductCategories();
+    const liveCategories = ((categoriesData?.data as any)?.categories || categoriesData?.data || []).slice(0, 5);
+
+    if (isLoadingProducts || isLoadingCats) {
+        return <div className="w-full h-[400px] bg-salon-base flex items-center justify-center text-salon-golden-muted">Loading collection...</div>;
+    }
+
+    if (!displayProducts || displayProducts.length === 0) {
+        return null;
+    }
 
     return (
         <section id="products-preview" className="py-20 md:py-28 bg-salon-base relative z-10 w-full overflow-hidden">
@@ -35,7 +40,7 @@ const ProductsPreview = () => {
                     <div className="flex flex-col mt-4 md:mt-0 gap-4 text-right">
                         <span className="text-[9px] uppercase tracking-[0.2em] text-salon-golden-muted">Browse Categories</span>
                         <div className="flex gap-6 max-w-[300px] flex-wrap justify-end">
-                            {categories.map((cat, idx) => (
+                            {liveCategories.map((cat: any, idx: number) => (
                                 <span key={idx} className="text-[10px] text-salon-golden-muted hover:text-salon-golden cursor-pointer transition-colors duration-300">
                                     {cat.name}
                                 </span>
@@ -60,7 +65,7 @@ const ProductsPreview = () => {
                             >
                                 <div className="absolute inset-0 bg-salon-surface opacity-100 transition-opacity duration-1000 group-hover:opacity-0 pointer-events-none z-10 mix-blend-color"></div>
                                 <img
-                                    src={product.img}
+                                    src={product.image_url || '/placeholder.png'}
                                     alt={product.title}
                                     className="w-auto h-full mix-blend-luminosity opacity-70 group-hover:mix-blend-normal group-hover:opacity-100 group-hover:scale-105 transition-all duration-[1500ms] drop-shadow-2xl object-contain z-20"
                                 />
@@ -81,7 +86,7 @@ const ProductsPreview = () => {
                                     0{idx + 1}
                                 </span>
 
-                                <span className="text-[9px] uppercase tracking-[0.3em] text-salon-golden-muted mb-3 relative">{product.category}</span>
+                                <span className="text-[9px] uppercase tracking-[0.3em] text-salon-golden-muted mb-3 relative">{liveCategories.find((c: any) => c.id === product.category_id)?.name || 'Product'}</span>
                                 <h3 className="text-3xl md:text-4xl font-serif text-salon-primary mb-3 relative leading-[1.1]">{product.title}</h3>
                                 <p className="text-salon-golden-muted font-light text-[11px] md:text-xs tracking-wide mb-8 relative max-w-[220px] italic">
                                     By {product.brand}

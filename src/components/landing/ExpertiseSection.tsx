@@ -18,20 +18,22 @@ interface StaffMember {
 }
 
 const ExpertiseSection = () => {
-    const { data: staffData } = useGetStaff({ featured: true });
+    const { data: staffData, isLoading } = useGetStaff({ featured: true });
     const { data: bootstrapData } = useGetBootstrapSettings();
 
     const liveStaff: StaffMember[] = ((staffData?.data as any)?.staff || staffData?.data || []).slice(0, 5);
     const settings = bootstrapData?.data?.expertise_section || {
         title: "Our",
         italicTitle: "Expertise",
-        description: "Meticulously crafted styles across all disciplines."
     };
 
-    // Fallback if no staff exist
-    const displayStaff: StaffMember[] = liveStaff.length > 0 ? liveStaff : [
-        { id: '1', name: "Master Barber", role: "Precision Cuts", avatar_url: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1474&q=80", services: [] },
-    ];
+    if (isLoading) {
+        return <div className="w-full h-[300px] bg-salon-base flex items-center justify-center text-salon-golden-muted">Loading expertise...</div>;
+    }
+
+    if (!liveStaff || liveStaff.length === 0) {
+        return null;
+    }
 
     return (
         <section id="expertise" className="py-16 md:py-24 w-full bg-salon-base relative z-10 border-t border-salon-golden/10">
@@ -48,7 +50,7 @@ const ExpertiseSection = () => {
                 />
 
                 <div className="flex flex-col gap-0 border-t border-salon-golden/10 relative">
-                    {displayStaff.map((item, idx) => (
+                    {liveStaff.map((item, idx) => (
                         <motion.a
                             href={`/experts/${item.id}`}
                             key={item.id || idx}

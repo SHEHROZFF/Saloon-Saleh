@@ -3,21 +3,20 @@ import SectionHeader from '../ui/SectionHeader';
 import { useGetProductCategories } from '../../hooks/queries/useProducts';
 
 const CategoriesSection = () => {
-    const { data: categoriesData } = useGetProductCategories();
+    const { data: categoriesData, isLoading } = useGetProductCategories();
     // Safely extract from backend response structure: { status: 'success', data: { categories: [...] } }
     const liveCategories = (categoriesData?.data as any)?.categories || categoriesData?.data || [];
     
-    // We will map the real categories and provide fallback styling
-    const getFallbackImage = (index: number) => {
-        const fallbacks = [
-            "https://images.unsplash.com/photo-1620330198031-6e3eebacdfae?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1629198688000-71f23e745b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1608248593842-801081e18dc1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-        ];
-        return fallbacks[index % fallbacks.length];
-    };
+
+
+    if (isLoading) {
+        return <div className="w-full h-[200px] bg-salon-base flex items-center justify-center text-salon-golden-muted">Loading categories...</div>;
+    }
+
+    if (!liveCategories || liveCategories.length === 0) {
+        return null;
+    }
+
     return (
         <section id="categories" className="py-10 bg-salon-base w-full">
             <div className="w-full max-w-[1400px] mx-auto px-8 md:px-16">
@@ -42,7 +41,7 @@ const CategoriesSection = () => {
                             className="group relative h-[350px] bg-[#0A0A0A] overflow-hidden cursor-pointer border border-transparent hover:border-salon-golden/30 transition-all duration-500"
                         >
                             <img 
-                                src={cat.image_url || getFallbackImage(idx)} 
+                                src={cat.image_url || '/placeholder.png'} 
                                 alt={cat.name} 
                                 className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-[2000ms] group-hover:scale-110"
                             />
