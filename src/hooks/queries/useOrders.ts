@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { orderService, couponService } from '../../services/api/orderService';
+import { toast } from '../../components/ui/Toast';
 
 export const useGetAllOrders = (params?: { order_status?: string; payment_status?: string; search?: string; page?: number; limit?: number }) => {
     return useQuery({
@@ -79,6 +80,7 @@ export const useDeleteCoupon = () => {
         mutationFn: (id: string) => couponService.deleteCoupon(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['coupons'] });
+            toast.success('Coupon deleted successfully.');
         },
     });
 };

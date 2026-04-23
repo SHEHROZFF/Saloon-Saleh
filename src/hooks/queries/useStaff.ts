@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { staffService, Staff } from '../../services/api/staffService';
+import { toast } from '../../components/ui/Toast';
 
-export const useGetStaff = (params?: { search?: string; all?: boolean }) => {
+export const useGetStaff = (params?: { search?: string; all?: boolean; featured?: boolean }) => {
     return useQuery({
         queryKey: ['staff', params],
         queryFn: () => staffService.getStaff(params),
@@ -44,6 +45,7 @@ export const useDeleteStaff = () => {
         mutationFn: (id: string) => staffService.deleteStaff(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['staff'] });
+            toast.success('Staff member deleted successfully.');
         },
     });
 };

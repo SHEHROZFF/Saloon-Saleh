@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { productService, Product } from '../../services/api/productService';
+import { toast } from '../../components/ui/Toast';
 
 export const useGetProducts = (params?: { category_id?: string; search?: string; sort?: string; page?: number; limit?: number; featured?: boolean; include_inactive?: boolean }) => {
     return useQuery({
@@ -63,6 +64,7 @@ export const useDeleteProduct = () => {
         mutationFn: (id: string) => productService.deleteProduct(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
+            toast.success('Product deleted successfully.');
         },
     });
 };

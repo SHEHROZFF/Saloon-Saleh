@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCreateCoupon } from '../../../hooks/queries/useOrders';
+import { toast } from '../../ui/Toast';
 
 interface CouponFormProps {
     onClose: () => void;
@@ -29,7 +30,7 @@ const CouponForm: React.FC<CouponFormProps> = ({ onClose }) => {
         };
 
         createCoupon(payload, {
-            onSuccess: () => onClose()
+            onSuccess: () => { toast.success('Coupon created successfully.'); onClose(); }
         });
     };
 

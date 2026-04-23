@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useUpdateOrderStatus } from '../../../hooks/queries/useOrders';
 import { CheckCircle, Loader2 } from 'lucide-react';
+import { toast } from '../../ui/Toast';
 
 interface OrderUpdateFormProps {
     order: any;
@@ -20,7 +21,7 @@ const OrderUpdateForm: React.FC<OrderUpdateFormProps> = ({ order, onClose }) => 
                 updates: { order_status: orderStatus, payment_status: paymentStatus } 
             },
             {
-                onSuccess: () => onClose()
+                onSuccess: () => { toast.success('Order status updated successfully.'); onClose(); }
             }
         );
     };

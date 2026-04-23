@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useUpdateOrder, useUpdateOrderStatus } from '../../../hooks/queries/useOrders';
 import { orderService } from '../../../services/api/orderService';
 import { CheckCircle, Loader2, User, MapPin, Clipboard } from 'lucide-react';
+import { toast } from '../../ui/Toast';
 
 interface OrderEditFormProps {
     orderId: string;
@@ -91,7 +92,7 @@ const OrderEditForm: React.FC<OrderEditFormProps> = ({ orderId, onClose }) => {
                 shipping_address: formData.shipping_address
             }
         }, {
-            onSuccess: () => onClose()
+            onSuccess: () => { toast.success('Order details updated successfully.'); onClose(); }
         });
     };
 

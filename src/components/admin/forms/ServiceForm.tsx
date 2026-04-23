@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCreateService, useUpdateService, useGetServiceCategories } from '../../../hooks/queries/useServices';
 import { Service } from '../../../services/api/serviceService';
+import { toast } from '../../ui/Toast';
 
 interface ServiceFormProps {
     initialData?: Service | null;
@@ -44,11 +45,11 @@ const ServiceForm: React.FC<ServiceFormProps> = ({ initialData, onClose }) => {
         
         if (initialData) {
             updateService({ id: initialData.id, data: formData }, {
-                onSuccess: () => onClose()
+                onSuccess: () => { toast.success('Service updated.'); onClose(); }
             });
         } else {
             createService(formData, {
-                onSuccess: () => onClose()
+                onSuccess: () => { toast.success('Service created.'); onClose(); }
             });
         }
     };

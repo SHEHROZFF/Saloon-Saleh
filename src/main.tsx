@@ -8,6 +8,7 @@ import App from './App';
 import './index.css';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { CartProvider } from './contexts/CartContext';
+import { toast, extractErrorMessage } from './components/ui/Toast';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -15,6 +16,11 @@ const queryClient = new QueryClient({
             retry: 2,
             staleTime: 5 * 60 * 1000, // 5 minutes
             refetchOnWindowFocus: false,
+        },
+        mutations: {
+            onError: (error: unknown) => {
+                toast.error(extractErrorMessage(error));
+            },
         },
     },
 });

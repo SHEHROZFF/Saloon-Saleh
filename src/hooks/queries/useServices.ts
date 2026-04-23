@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { serviceService, Service } from '../../services/api/serviceService';
+import { toast } from '../../components/ui/Toast';
 
 export const useGetServices = (params?: { category_id?: string; gender?: string }) => {
     return useQuery({
@@ -43,6 +44,7 @@ export const useDeleteService = () => {
         mutationFn: (id: string) => serviceService.deleteService(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['services'] });
+            toast.success('Service deleted successfully.');
         },
     });
 };

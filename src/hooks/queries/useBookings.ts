@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookingService } from '../../services/api/bookingService';
+import { toast } from '../../components/ui/Toast';
 
 export const useGetTimeSlots = () => {
     return useQuery({
@@ -49,6 +50,7 @@ export const useUpdateBookingStatus = () => {
         mutationFn: ({ id, status }: { id: string; status: string }) => bookingService.updateStatus(id, status),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['bookings'] });
+            toast.success('Booking status updated successfully.');
         },
     });
 };
@@ -59,6 +61,7 @@ export const useDeleteBooking = () => {
         mutationFn: (id: string) => bookingService.deleteBooking(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['bookings'] });
+            toast.success('Booking deleted successfully.');
         },
     });
 };
@@ -89,6 +92,7 @@ export const useUpdateStaffBookingStatus = () => {
         mutationFn: ({ id, status }: { id: string; status: string }) => bookingService.updateStaffBookingStatus(id, status),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['bookings', 'staff'] });
+            toast.success('Booking status updated successfully.');
         },
     });
 };

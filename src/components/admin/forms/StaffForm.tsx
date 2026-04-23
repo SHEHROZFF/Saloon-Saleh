@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useCreateStaff, useUpdateStaff } from '../../../hooks/queries/useStaff';
 import { Staff } from '../../../services/api/staffService';
 import { useGetServices } from '../../../hooks/queries/useServices';
+import { toast } from '../../ui/Toast';
 
 interface StaffFormProps {
     initialData?: Staff | null;
@@ -20,6 +21,7 @@ const StaffForm: React.FC<StaffFormProps> = ({ initialData, onClose }) => {
         email: '',
         phone: '',
         is_active: true,
+        is_featured: false,
         service_ids: [] as string[],
         bio: '',
         experience_years: '',
@@ -35,6 +37,7 @@ const StaffForm: React.FC<StaffFormProps> = ({ initialData, onClose }) => {
                 email: initialData.email || '',
                 phone: initialData.phone || '',
                 is_active: initialData.is_active !== false,
+                is_featured: !!initialData.is_featured,
                 service_ids: Array.isArray(initialData.services) 
                     ? initialData.services.map((s: any) => typeof s === 'object' ? s.id : s) 
                     : [],
@@ -51,11 +54,11 @@ const StaffForm: React.FC<StaffFormProps> = ({ initialData, onClose }) => {
         
         if (initialData) {
             updateStaff({ id: initialData.id, data: formData }, {
-                onSuccess: () => onClose()
+                onSuccess: () => { toast.success('Staff profile updated.'); onClose(); }
             });
         } else {
             createStaff(formData, {
-                onSuccess: () => onClose()
+                onSuccess: () => { toast.success('Staff member created.'); onClose(); }
             });
         }
     };
@@ -103,6 +106,7 @@ const StaffForm: React.FC<StaffFormProps> = ({ initialData, onClose }) => {
                     <div>
                         <label className="block text-[10px] uppercase tracking-widest text-salon-muted mb-1">Email</label>
                         <input
+                            required
                             type="email"
                             value={formData.email}
                             onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
@@ -113,6 +117,7 @@ const StaffForm: React.FC<StaffFormProps> = ({ initialData, onClose }) => {
                     <div>
                         <label className="block text-[10px] uppercase tracking-widest text-salon-muted mb-1">Phone</label>
                         <input
+                            required
                             type="text"
                             value={formData.phone}
                             onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
@@ -190,15 +195,27 @@ const StaffForm: React.FC<StaffFormProps> = ({ initialData, onClose }) => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 pt-2">
-                    <input
-                        type="checkbox"
-                        id="is_active"
-                        checked={formData.is_active}
-                        onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
-                        className="accent-salon-golden w-4 h-4"
-                    />
-                    <label htmlFor="is_active" className="text-sm cursor-pointer font-medium">Active Staff Member</label>
+                <div className="flex flex-col gap-3 pt-2">
+                    <div className="flex items-center gap-3">
+                        <input
+                            type="checkbox"
+                            id="is_active"
+                            checked={formData.is_active}
+                            onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
+                            className="accent-salon-golden w-4 h-4"
+                        />
+                        <label htmlFor="is_active" className="text-sm cursor-pointer font-medium">Active Staff Member</label>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <input
+                            type="checkbox"
+                            id="is_featured"
+                            checked={formData.is_featured}
+                            onChange={(e) => setFormData(prev => ({ ...prev, is_featured: e.target.checked }))}
+                            className="accent-salon-golden w-4 h-4"
+                        />
+                        <label htmlFor="is_featured" className="text-sm cursor-pointer font-medium text-salon-golden">Feature on Landing Page</label>
+                    </div>
                 </div>
             </div>
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCreateProduct, useUpdateProduct, useGetProductCategories } from '../../../hooks/queries/useProducts';
 import { Product } from '../../../services/api/productService';
+import { toast } from '../../ui/Toast';
 
 interface ProductFormProps {
     initialData?: Product | null;
@@ -51,11 +52,11 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onClose }) => {
 
         if (initialData) {
             updateProduct({ id: initialData.id, data: formData }, {
-                onSuccess: () => onClose()
+                onSuccess: () => { toast.success('Product updated.'); onClose(); }
             });
         } else {
             createProduct(formData, {
-                onSuccess: () => onClose()
+                onSuccess: () => { toast.success('Product created.'); onClose(); }
             });
         }
     };

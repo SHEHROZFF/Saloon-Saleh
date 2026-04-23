@@ -3,6 +3,7 @@ import { useCreateBooking, useUpdateBookingDetails, useCheckAvailability } from 
 import { useGetStaff } from '../../../hooks/queries/useStaff';
 import { useGetServices } from '../../../hooks/queries/useServices';
 import { Booking } from '../../../services/api/bookingService';
+import { toast } from '../../ui/Toast';
 
 interface ManualBookingFormProps {
     initialData?: Booking | null;
@@ -87,9 +88,9 @@ const ManualBookingForm: React.FC<ManualBookingFormProps> = ({ initialData, onCl
         };
         
         if (initialData) {
-            updateBooking({ id: initialData.id, data: payload }, { onSuccess: () => onClose() });
+            updateBooking({ id: initialData.id, data: payload }, { onSuccess: () => { toast.success('Booking updated successfully.'); onClose(); } });
         } else {
-            createBooking(payload, { onSuccess: () => onClose() });
+            createBooking(payload, { onSuccess: () => { toast.success('Booking created successfully.'); onClose(); } });
         }
     };
 

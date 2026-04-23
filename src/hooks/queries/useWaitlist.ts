@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { waitlistService } from '@services/api/waitlistService';
+import { toast } from '@components/ui/Toast';
 
 export const useGetWaitlist = (params?: { page?: number; limit?: number; status?: string }) => {
     return useQuery({
@@ -22,6 +23,7 @@ export const useUpdateWaitlistStatus = () => {
             waitlistService.updateWaitlistStatus(id, status),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['waitlist'] });
+            toast.success('Waitlist status updated.');
         },
     });
 };

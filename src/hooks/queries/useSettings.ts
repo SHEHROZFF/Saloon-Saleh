@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { settingsService } from '../../services/api/settingsService';
+import { toast } from '../../components/ui/Toast';
 
 export const useGetBootstrapSettings = () => {
     return useQuery({
@@ -26,6 +27,7 @@ export const useUpsertSettings = () => {
             settingsService.upsertSettings(key, value),
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ['settings', variables.key] });
+            toast.success('Settings updated successfully.');
         },
     });
 };

@@ -18,10 +18,10 @@ interface StaffMember {
 }
 
 const ExpertiseSection = () => {
-    const { data: staffData } = useGetStaff();
+    const { data: staffData } = useGetStaff({ featured: true });
     const { data: bootstrapData } = useGetBootstrapSettings();
 
-    const liveStaff: StaffMember[] = (staffData?.data as any)?.staff || staffData?.data || [];
+    const liveStaff: StaffMember[] = ((staffData?.data as any)?.staff || staffData?.data || []).slice(0, 5);
     const settings = bootstrapData?.data?.expertise_section || {
         title: "Our",
         italicTitle: "Expertise",

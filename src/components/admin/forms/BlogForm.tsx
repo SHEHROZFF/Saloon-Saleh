@@ -3,6 +3,7 @@ import { useCreateBlog, useUpdateBlog } from '../../../hooks/queries/useBlogs';
 import { useGetStaff } from '../../../hooks/queries/useStaff';
 import { BlogPost } from '../../../services/api/blogService';
 import { Loader2, CheckCircle, Image as ImageIcon, User } from 'lucide-react';
+import { toast } from '../../ui/Toast';
 
 interface BlogFormProps {
     initialData?: BlogPost | null;
@@ -49,11 +50,11 @@ const BlogForm: React.FC<BlogFormProps> = ({ initialData, onClose }) => {
         
         if (initialData) {
             updateBlog({ id: initialData.id, data: formData }, {
-                onSuccess: () => onClose()
+                onSuccess: () => { toast.success('Article updated.'); onClose(); }
             });
         } else {
             createBlog(formData, {
-                onSuccess: () => onClose()
+                onSuccess: () => { toast.success('Article published.'); onClose(); }
             });
         }
     };

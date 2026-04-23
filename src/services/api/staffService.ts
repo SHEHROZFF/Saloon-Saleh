@@ -17,6 +17,7 @@ export interface Staff {
     phone: string;
     email: string;
     is_active: boolean;
+    is_featured: boolean;
     sort_order: number;
     bio?: string;
     specialties?: string[];
@@ -27,7 +28,7 @@ export interface Staff {
 }
 
 export const staffService = {
-    getStaff: async (params?: { search?: string; all?: boolean }) => {
+    getStaff: async (params?: { search?: string; all?: boolean; featured?: boolean }) => {
         return apiClient.get<{ data: { staff: Staff[] } }>('/staff', { params });
     },
 
